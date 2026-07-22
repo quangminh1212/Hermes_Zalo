@@ -1,6 +1,5 @@
 /**
- * Hermes_Zalo — personal-account bridge (OpenClaw zalouser pattern).
- * https://github.com/quangminh1212/Hermes_Zalo
+ * Hermes Zalo personal-account bridge (OpenClaw zalouser pattern).
  *
  * Unofficial zca-js — risk of account ban. Use a secondary account.
  *
@@ -48,6 +47,12 @@ const SEND_SEEN = ['1', 'true', 'yes', 'on'].includes(
 const MAX_QUEUE = 500;
 const TEXT_LIMIT = 2000;
 const MEDIA_CACHE = path.join(SESSION_DIR, '..', 'media_cache');
+const QUEUE_PATH = path.join(SESSION_DIR, '..', 'inbound_queue.json');
+// Mark seen only after gateway polls /messages (not on receive) so unread
+// messages are not "read" then lost without a reply during restarts.
+const SEEN_ON_RECEIVE = ['1', 'true', 'yes', 'on'].includes(
+  String(process.env.ZALO_SEEN_ON_RECEIVE || 'false').toLowerCase(),
+);
 fs.mkdirSync(SESSION_DIR, { recursive: true });
 fs.mkdirSync(MEDIA_CACHE, { recursive: true });
 
@@ -100,6 +105,8 @@ const messageQueue = [];
 const recentSent = new Set();
 const recentInbound = new Set();
 const MAX_RECENT = 300;
+/** @type {Map<string, any>} msgId -> original message for delayed seen */
+const pendingSeen = new Map();
 
 function log(...a) {
   console.log(...a);
@@ -194,9 +201,55 @@ function chunkText(text) {
   return out;
 }
 
+function persistQueue() {
+  try {
+    fs.writeFileSync(
+      QUEUE_PATH,
+      JSON.stringify({ savedAt: new Date().toISOString(), messages: messageQueue }, null, 0),
+      'utf8',
+    );
+  } catch (e) {
+    log('warn: persist queue failed:', e?.message || e);
+  }
+}
+
+function loadPersistedQueue() {
+  try {
+    if (!fs.existsSync(QUEUE_PATH)) return;
+    const j = JSON.parse(fs.readFileSync(QUEUE_PATH, 'utf8'));
+    const msgs = Array.isArray(j) ? j : j?.messages;
+    if (!Array.isArray(msgs) || !msgs.length) return;
+    const seen = new Set(messageQueue.map((m) => String(m.messageId || '')));
+    let added = 0;
+    for (const m of msgs) {
+      if (!m || typeof m !== 'object') continue;
+      const id = String(m.messageId || '');
+      if (id && seen.has(id)) continue;
+      messageQueue.push(m);
+      if (id) seen.add(id);
+      added += 1;
+      if (messageQueue.length > MAX_QUEUE) messageQueue.shift();
+    }
+    if (added) log(`📥 Restored ${added} queued inbound msg(s) from disk`);
+  } catch (e) {
+    log('warn: load queue failed:', e?.message || e);
+  }
+}
+
 function enqueueMessage(evt) {
+  // dedupe by messageId
+  const id = String(evt?.messageId || '');
+  if (id && messageQueue.some((m) => String(m.messageId || '') === id)) return;
   messageQueue.push(evt);
   if (messageQueue.length > MAX_QUEUE) messageQueue.shift();
+  persistQueue();
+}
+
+function dequeueMessages(limit = messageQueue.length) {
+  const n = Math.max(0, Math.min(limit, messageQueue.length));
+  const msgs = messageQueue.splice(0, n);
+  persistQueue();
+  return msgs;
 }
 
 function threadType(isGroup) {
@@ -259,12 +312,22 @@ function attachListener(apiInst) {
 
       if (!body && !media) return;
 
-      // fire-and-forget seen/delivered (don't block queue)
-      if (SEND_SEEN && !message.isSelf && apiInst.sendSeenEvent) {
+      // Do NOT mark seen on receive by default. If gateway/bridge restarts
+      // before a reply, early seen makes chats look "read" with no answer.
+      // Optional legacy: ZALO_SEEN_ON_RECEIVE=true
+      if (SEEN_ON_RECEIVE && SEND_SEEN && !message.isSelf && apiInst.sendSeenEvent) {
         try {
           Promise.resolve(apiInst.sendSeenEvent(message)).catch(() => {});
         } catch {}
       }
+
+      try {
+        if (!message.isSelf) pendingSeen.set(msgId, message);
+        if (pendingSeen.size > MAX_RECENT) {
+          const first = pendingSeen.keys().next().value;
+          pendingSeen.delete(first);
+        }
+      } catch {}
 
       enqueueMessage({
         messageId: msgId,
@@ -434,15 +497,30 @@ function requireConnected(res) {
   return true;
 }
 
+function isCompleteQuote(q) {
+  // zca SendMessageQuote — bare {msgId} makes Zalo return "Tham số không hợp lệ"
+  return (
+    q &&
+    typeof q === 'object' &&
+    q.msgId != null &&
+    q.uidFrom != null &&
+    (q.cliMsgId != null || q.ts != null)
+  );
+}
+
 async function sendTextInternal(chatId, message, isGroup, replyTo) {
   const type = threadType(isGroup);
-  const chunks = chunkText(String(message ?? ''));
+  // Force string; reject buffers that were mis-decoded
+  const text = typeof message === 'string' ? message : String(message ?? '');
+  const chunks = chunkText(text);
   const ids = [];
   for (let i = 0; i < chunks.length; i++) {
     const payload = { msg: chunks[i] };
-    // quote support if caller passed a prior message snapshot
-    if (replyTo && i === 0 && typeof replyTo === 'object') {
+    // quote only when full snapshot present (else plain send)
+    if (i === 0 && isCompleteQuote(replyTo)) {
       payload.quote = replyTo;
+    } else if (i === 0 && replyTo) {
+      log(JSON.stringify({ event: 'quote_skipped', reason: 'incomplete_quote' }));
     }
     const result = await api.sendMessage(payload, String(chatId), type);
     const mid = extractSendMessageId(result);
@@ -541,7 +619,12 @@ async function sendMediaInternal({ chatId, filePath, fileUrl, mediaType, caption
 
 // ── HTTP ──────────────────────────────────────────────────────────
 const app = express();
-app.use(express.json({ limit: '12mb' }));
+// Ensure JSON body is parsed as UTF-8 (Windows clients / proxies sometimes omit charset)
+app.use(express.json({ limit: '12mb', type: ['application/json', 'application/*+json'] }));
+app.use((req, res, next) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  next();
+});
 
 app.use((req, res, next) => {
   const host = String(req.headers.host || '').split(':')[0].toLowerCase();
@@ -555,6 +638,7 @@ app.get('/health', (_req, res) => {
   res.json({
     status: connectionState,
     queueLength: messageQueue.length,
+    queuePersisted: fs.existsSync(QUEUE_PATH),
     uptime: process.uptime(),
     scriptHash: SCRIPT_HASH,
     ownId,
@@ -624,7 +708,23 @@ app.post('/pair', async (_req, res) => {
 });
 
 app.get('/messages', (_req, res) => {
-  const msgs = messageQueue.splice(0, messageQueue.length);
+  const msgs = dequeueMessages(messageQueue.length);
+  // Gateway has taken ownership → now mark seen (if enabled)
+  if (SEND_SEEN && api && msgs.length) {
+    for (const m of msgs) {
+      try {
+        const id = String(m.messageId || '');
+        const original = id ? pendingSeen.get(id) : null;
+        if (original && api.sendSeenEvent) {
+          Promise.resolve(api.sendSeenEvent(original)).catch(() => {});
+        }
+        if (id) pendingSeen.delete(id);
+      } catch {}
+    }
+  }
+  if (msgs.length) {
+    log(JSON.stringify({ event: 'polled', count: msgs.length, left: messageQueue.length }));
+  }
   res.json(msgs);
 });
 
@@ -722,6 +822,7 @@ if (PAIR_ONLY) {
       process.exit(1);
     });
 } else {
+  loadPersistedQueue();
   app.listen(PORT, '127.0.0.1', () => {
     log(`🌉 Zalo bridge listening on port ${PORT}`);
     log(`📁 Session: ${SESSION_DIR}`);
