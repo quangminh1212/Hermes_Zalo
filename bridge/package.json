@@ -1,0 +1,21 @@
+{
+  "name": "@hermes-zalo/bridge",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Hermes_Zalo local HTTP bridge — Zalo personal (zca-js) ↔ Hermes Agent",
+  "main": "bridge.js",
+  "scripts": {
+    "start": "node bridge.js --port 3001",
+    "pair": "node bridge.js --pair-only",
+    "dev": "node bridge.js --port 3001"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "qrcode-terminal": "^0.12.0",
+    "zca-js": "2.1.2"
+  }
+}

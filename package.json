@@ -1,0 +1,39 @@
+{
+  "name": "hermes-zalo",
+  "version": "1.1.0",
+  "private": false,
+  "description": "Hermes_Zalo — unofficial Zalo personal bridge + Hermes Agent platform plugin (zca-js). Chat Hermes on Zalo like Telegram.",
+  "keywords": [
+    "hermes",
+    "hermes-agent",
+    "Hermes_Zalo",
+    "zalo",
+    "zalo-bot",
+    "zca-js",
+    "messaging",
+    "gateway",
+    "bridge",
+    "ai-agent",
+    "vietnam",
+    "openclaw",
+    "zalouser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quangminh1212/Hermes_Zalo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/quangminh1212/Hermes_Zalo/issues"
+  },
+  "homepage": "https://github.com/quangminh1212/Hermes_Zalo#readme",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "install:bridge": "npm install --prefix bridge",
+    "start": "npm start --prefix bridge",
+    "pair": "npm run pair --prefix bridge",
+    "bridge": "node bridge/bridge.js --port 3001"
+  }
+}
