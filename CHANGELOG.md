@@ -1,6 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+- CSKH plain-text outbound (`_plain_zalo_text`: strip markdown/HTML/fancy unicode)
+- Plugin version bump; Hermes home junctions are SoT (not AgentLab copies)
+- Sync runtime adapter from AgentLab into this repo; AgentLab only keeps docs/pointers
+
 ## 1.1.0
+
 
 - Media out: image / video / voice / document via `/send-media`
 - Typing, `get_chat_info`, seen receipts

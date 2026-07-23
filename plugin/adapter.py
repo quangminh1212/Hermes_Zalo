@@ -20,12 +20,159 @@ import asyncio
 import logging
 import os
 import platform as py_platform
+import re
 import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+def _plain_zalo_text(text: str) -> str:
+    """Zalo CSKH: plain chat only — no bold/italic/font/markdown."""
+    if not text:
+        return ""
+    s = str(text).replace("\r\n", "\n").replace("\r", "\n")
+    # zero-width / fancy spaces that look like "font tricks"
+    for ch in (
+        "\u200b", "\u200c", "\u200d", "\ufeff", "\u2060",
+        "\u00a0",  # nbsp → normal space later
+    ):
+        s = s.replace(ch, " " if ch == "\u00a0" else "")
+    # HTML-ish
+    s = re.sub(r"<br\s*/?>", "\n", s, flags=re.I)
+    s = re.sub(r"</p\s*>", "\n", s, flags=re.I)
+    s = re.sub(r"<[^>]+>", "", s)
+    # code fences / inline
+    s = re.sub(r"```[\w-]*\n?", "", s)
+    s = s.replace("```", "")
+    s = re.sub(r"`([^`]+)`", r"\1", s)
+    # markdown links
+    s = re.sub(r"\[([^\]\n]+)\]\(([^)]+)\)", r"\1 \2", s)
+    # bold/italic/strike (common markdown)
+    s = re.sub(r"\*\*\*([^*]+)\*\*\*", r"\1", s)
+    s = re.sub(r"\*\*([^*]+)\*\*", r"\1", s)
+    s = re.sub(r"__([^_]+)__", r"\1", s)
+    s = re.sub(r"~~([^~]+)~~", r"\1", s)
+    s = re.sub(r"(?<![*\w])\*([^*\n]+?)\*(?![*\w])", r"\1", s)
+    s = re.sub(r"(?<![_\w])_([^_\n]+?)_(?![_\w])", r"\1", s)
+    # headings / quotes
+    s = re.sub(r"(?m)^[ \t]{0,3}#{1,6}[ \t]+", "", s)
+    s = re.sub(r"(?m)^[ \t]{0,3}>[ \t]?", "", s)
+    # bullets → plain dash line (no special bullet font)
+    s = re.sub(r"(?m)^[ \t]*[\*\+\-·•▪◦●○][ \t]+", "- ", s)
+    # park URLs then strip leftover markdown markers
+    urls: list[str] = []
+
+    def _park(m: re.Match) -> str:
+        urls.append(m.group(0))
+        return f"§URL{len(urls) - 1}§"
+
+    s = re.sub(r"https?://[^\s<>\]]+", _park, s)
+    for ch in ("*", "#", "`", "•", "▪", "◦", "●", "○"):
+        s = s.replace(ch, "")
+    # mathematical / fullwidth / bold-unicode letters → best-effort strip to ASCII letters if mapped
+    # (Zalo sometimes gets fancy unicode "bold" from models)
+    try:
+        import unicodedata
+
+        def _demath(c: str) -> str:
+            # unwrap enclosed/math alphanumerics via NFKC when possible
+            return unicodedata.normalize("NFKC", c)
+
+        s = "".join(_demath(c) for c in s)
+    except Exception:
+        pass
+    for i, u in enumerate(urls):
+        s = s.replace(f"§URL{i}§", u)
+    # collapse whitespace
+    s = re.sub(r"[ \t]{2,}", " ", s)
+    s = re.sub(r"[ \t]+\n", "\n", s)
+    s = re.sub(r"\n{3,}", "\n\n", s)
+    return s.strip()
+
+
+
+# CSKH Zalo: short bubbles (normal chat feel)
+_ZALO_SOFT_CHARS = 260
+_ZALO_SOFT_LINES = 5
+_ZALO_HARD_CHARS = 900
+_ZALO_CHUNK_DELAY_S = 0.55
+
+
+def _split_zalo_cskh(text: str, soft_chars: int = _ZALO_SOFT_CHARS, soft_lines: int = _ZALO_SOFT_LINES) -> list[str]:
+    """Split long CSKH replies into short plain bubbles."""
+    s = (text or "").strip()
+    if not s:
+        return []
+    if len(s) <= soft_chars and s.count("\n") + 1 <= soft_lines:
+        return [s]
+
+    # Prefer blank-line paragraphs first
+    paras = [p.strip() for p in re.split(r"\n\s*\n", s) if p.strip()]
+    if len(paras) == 1:
+        # single block: split by lines then sentences
+        lines = [ln.strip() for ln in s.split("\n") if ln.strip()]
+        if len(lines) > 1:
+            paras = lines
+        else:
+            paras = re.split(r"(?<=[.!?…。！？])\s+", s)
+            paras = [x.strip() for x in paras if x.strip()] or [s]
+
+    chunks: list[str] = []
+    buf: list[str] = []
+    buf_len = 0
+    buf_lines = 0
+
+    def flush():
+        nonlocal buf, buf_len, buf_lines
+        if buf:
+            chunks.append("\n".join(buf).strip())
+            buf, buf_len, buf_lines = [], 0, 0
+
+    for para in paras:
+        # hard-wrap oversized paragraph
+        pieces = [para]
+        if len(para) > soft_chars:
+            pieces = []
+            # sentence-ish then width
+            sents = re.split(r"(?<=[.!?…。！？;；])\s+", para)
+            sents = [x.strip() for x in sents if x.strip()] or [para]
+            for sent in sents:
+                if len(sent) <= soft_chars:
+                    pieces.append(sent)
+                else:
+                    # wrap by words/chars
+                    start_i = 0
+                    while start_i < len(sent):
+                        pieces.append(sent[start_i : start_i + soft_chars].strip())
+                        start_i += soft_chars
+        for piece in pieces:
+            add_lines = piece.count("\n") + 1
+            add_len = len(piece) + (1 if buf else 0)
+            if buf and (buf_len + add_len > soft_chars or buf_lines + add_lines > soft_lines):
+                flush()
+            buf.append(piece)
+            buf_len += add_len
+            buf_lines += add_lines
+            # if still oversized alone, flush immediately
+            if buf_len >= soft_chars or buf_lines >= soft_lines:
+                flush()
+    flush()
+
+    # safety hard cap
+    final: list[str] = []
+    for c in chunks:
+        if len(c) <= _ZALO_HARD_CHARS:
+            final.append(c)
+        else:
+            for i in range(0, len(c), _ZALO_HARD_CHARS):
+                part = c[i : i + _ZALO_HARD_CHARS].strip()
+                if part:
+                    final.append(part)
+    return final or [s[:_ZALO_HARD_CHARS]]
+
+
 
 _IS_WINDOWS = py_platform.system() == "Windows"
 
@@ -200,24 +347,52 @@ class ZaloAdapter(BasePlatformAdapter):
         target, is_group_pref = _strip_group_prefix(chat_id)
         is_group = bool(meta.get("is_group") or is_group_pref)
         try:
-            payload: Dict[str, Any] = {
-                "chatId": target,
-                "message": content,
-                "isGroup": is_group,
-            }
-            if reply_to:
-                payload["replyTo"] = {"msgId": reply_to}
-            async with self._http_session.post(
-                f"http://127.0.0.1:{self._bridge_port}/send",
-                json=payload,
-                timeout=aiohttp.ClientTimeout(total=60),
-            ) as resp:
-                data = await resp.json(content_type=None)
-                if resp.status == 200 and data.get("success"):
-                    return SendResult(success=True, message_id=data.get("messageId"))
-                return SendResult(
-                    success=False, error=data.get("error") or f"HTTP {resp.status}"
-                )
+            # Always send Unicode text as str — aiohttp json= uses ensure_ascii
+            # escape which Zalo accepts; never re-encode via Windows console.
+            if not isinstance(content, str):
+                content = str(content or "")
+            content = _plain_zalo_text(content)
+            # CSKH: long replies → several short Zalo bubbles
+            no_split = bool(meta.get("no_split") or meta.get("zalo_no_split"))
+            parts = [content] if no_split else _split_zalo_cskh(content)
+            if not parts:
+                return SendResult(success=True, message_id=None)
+
+            last_id = None
+            quote = meta.get("zalo_quote") or meta.get("quote")
+            for idx, part in enumerate(parts):
+                payload: Dict[str, Any] = {
+                    "chatId": target,
+                    "message": part,
+                    "isGroup": is_group,
+                }
+                # Only first bubble may carry a full quote object.
+                if (
+                    idx == 0
+                    and isinstance(quote, dict)
+                    and quote.get("msgId")
+                    and quote.get("uidFrom")
+                ):
+                    payload["replyTo"] = quote
+                async with self._http_session.post(
+                    f"http://127.0.0.1:{self._bridge_port}/send",
+                    json=payload,
+                    timeout=aiohttp.ClientTimeout(total=60),
+                ) as resp:
+                    data = await resp.json(content_type=None)
+                    if not (resp.status == 200 and data.get("success")):
+                        err = data.get("error") or f"HTTP {resp.status}"
+                        if last_id:
+                            return SendResult(
+                                success=False,
+                                error=f"partial send after {idx}/{len(parts)}: {err}",
+                                message_id=last_id,
+                            )
+                        return SendResult(success=False, error=err)
+                    last_id = data.get("messageId") or last_id
+                if idx < len(parts) - 1 and _ZALO_CHUNK_DELAY_S > 0:
+                    await asyncio.sleep(_ZALO_CHUNK_DELAY_S)
+            return SendResult(success=True, message_id=last_id)
         except Exception as e:
             return SendResult(success=False, error=str(e))
 
@@ -251,7 +426,7 @@ class ZaloAdapter(BasePlatformAdapter):
         if file_url:
             payload["fileUrl"] = file_url
         if caption:
-            payload["caption"] = caption
+            payload["caption"] = _plain_zalo_text(str(caption))
         if file_name:
             payload["fileName"] = file_name
         try:
@@ -741,6 +916,253 @@ async def _standalone_send(chat_id: str, message: str, **kwargs) -> dict:
         return {"error": str(e)}
 
 
+_PAIR_CMDS = frozenset({"pairzalo", "pair", "pair_zalo"})
+
+# Commands that historically hung Zalo sessions for 5–30 min (approval + idle).
+# Instant-block — never wait for approve/timeout.
+_HANG_CMD_PATTERNS = tuple(
+    re.compile(p, re.I)
+    for p in (
+        # gateway / bridge lifecycle (any rename of known scripts)
+        r"headless_full",
+        r"force_restart_gw",
+        r"gw_relaunch",
+        r"restart_zalo_(only|bridge)",
+        r"Hermes_Gateway\.(vbs|cmd|bat|ps1)",
+        r"hermes(\.exe)?\s+gateway\s+(run|stop|restart|install|start)",
+        r"pythonw(\.exe)?\s+-m\s+hermes_cli\.main\s+gateway",
+        r"python(\.exe)?\s+-m\s+hermes_cli\.main\s+gateway",
+        r"(taskkill|Stop-Process|kill).{0,120}(bridge\.js|hermes_cli|pythonw|gateway)",
+        r"(rm|del|Remove-Item).{0,60}bridge\.js",
+        r"schtasks.{0,80}(Hermes|HkGwRel|Gateway)",
+        r"Register-ScheduledTask.{0,80}(Hermes|HkGwRel|Gateway)",
+        r"Start-ScheduledTask.{0,40}(Hermes|HkGwRel)",
+        r"Get-CimInstance\s+Win32_Process.{0,160}(bridge|hermes_cli|gateway)",
+        r"Start-Process.{0,120}(headless|force_restart|gw_relaunch|Hermes_Gateway|restart_zalo)",
+        r"wscript.{0,80}Hermes_Gateway",
+        # long blind waits (Unix + Windows) — idle watchdog cannot see progress
+        # threshold: >= 60 seconds
+        r"\bsleep\s+(?:[6-9]\d|\d{3,})\b",
+        r"Start-Sleep\s+(?:-Seconds\s+)?(?:[6-9]\d|\d{3,})",
+        r"\btimeout\s+/t\s+(?:[6-9]\d|\d{3,})\b",
+        r"\bping\s+-n\s+(?:[6-9]\d|\d{3,})\b",
+        r"for\s+\w+\s+in\s+.*;\s*do\s+sleep\s+",
+        r"while\s+true\s*;\s*do",
+        r"while\s*\(\s*\$true\s*\)",
+        r"for\s*\(\s*;\s*;\s*\)",  # C-style infinite
+        r"time\.sleep\s*\(\s*(?:[6-9]\d|\d{3,})\s*\)",
+        r"Thread\.Sleep\s*\(\s*(?:[6-9]\d{3,}|\d{5,})\s*\)",  # ms >= 60000
+    )
+)
+
+# Tools that can embed hang cmds in non-command fields
+_HANG_TOOL_NAMES = frozenset(
+    {
+        "terminal",
+        "execute_code",
+        "run_terminal_command",
+        "shell",
+        "process",
+        "run_command",
+    }
+)
+
+
+def _extract_terminal_command(args: Any) -> str:
+    if args is None:
+        return ""
+    if isinstance(args, str):
+        try:
+            import json as _json
+
+            args = _json.loads(args)
+        except Exception:
+            return args
+    if isinstance(args, dict):
+        parts = []
+        for k in (
+            "command",
+            "cmd",
+            "code",
+            "script",
+            "data",
+            "input",
+            "args",
+            "argv",
+        ):
+            v = args.get(k)
+            if v is None:
+                continue
+            if isinstance(v, (list, tuple)):
+                parts.append(" ".join(str(x) for x in v))
+            else:
+                parts.append(str(v))
+        return "\n".join(parts)
+    return str(args)
+
+
+def _anti_hang_pre_tool_call(
+    tool_name: str = "",
+    args: Any = None,
+    session_id: str = "",
+    **_: Any,
+) -> Optional[Dict[str, str]]:
+    """Hard-block hang-class ops (gateway restart / long sleep / infinite loops).
+
+    Returns immediately with action=block so the model never sits in
+    approval-wait or idle-timeout. Covers terminal + execute_code + process.
+    """
+    name = (tool_name or "").lower()
+    if name not in _HANG_TOOL_NAMES:
+        return None
+    # Normalize dict args (may arrive as JSON string)
+    parsed = args
+    if isinstance(parsed, str):
+        try:
+            import json as _json
+
+            parsed = _json.loads(parsed)
+        except Exception:
+            parsed = args
+    # process(wait/poll) with large/missing timeout is itself a hang vector
+    if name == "process" and isinstance(parsed, dict):
+        action = str(parsed.get("action") or "").lower()
+        if action in {"wait", "poll"}:
+            raw_to = parsed.get("timeout")
+            try:
+                to = float(raw_to) if raw_to is not None else 9999.0
+            except Exception:
+                to = 9999.0
+            if to >= 60 or raw_to is None:
+                return {
+                    "action": "block",
+                    "message": (
+                        "ANTI-HANG BLOCK: process wait/poll with timeout>=60s "
+                        "(or no timeout) from chat. Finish turn or use timeout<=30."
+                    ),
+                }
+    cmd = _extract_terminal_command(args)
+    if not cmd:
+        return None
+    for pat in _HANG_CMD_PATTERNS:
+        if pat.search(cmd):
+            logger.warning(
+                "anti-hang blocked tool=%s session=%s pattern=%s cmd=%.160s",
+                name,
+                session_id,
+                pat.pattern,
+                cmd.replace("\n", " "),
+            )
+            return {
+                "action": "block",
+                "message": (
+                    "ANTI-HANG BLOCK: hang-class pattern "
+                    f"({pat.pattern}). "
+                    "Do NOT restart gateway/bridge, long-sleep, or infinite-loop from chat. "
+                    "Allowlist: POST http://127.0.0.1:3001/allowlist "
+                    '{"users":"UID","allowAll":false}. '
+                    "Full restart: user runs desktop gw_relaunch.ps1 only — never this turn. "
+                    "Pivot to a short non-restart approach now."
+                ),
+            }
+    return None
+
+
+def _pairzalo_pre_dispatch(event=None, gateway=None, **_kwargs):
+    """Opt-in pairing only: /pairzalo or /pair on Zalo.
+
+    Gateway default auto-sends pairing codes to unknown DMs; operators here
+    prefer public guest chat + explicit command. unauthorized_dm_behavior is
+    also set to ignore in config.yaml so non-command DMs never get a code.
+    """
+    if event is None or gateway is None:
+        return None
+    text = (getattr(event, "text", None) or "").strip()
+    if not text:
+        return None
+    first = text.split(None, 1)[0].lower()
+    # Accept /pairzalo, !pairzalo, pairzalo
+    cmd = first.lstrip("/!").replace("-", "_")
+    if cmd not in _PAIR_CMDS:
+        return None
+
+    source = getattr(event, "source", None)
+    if source is None:
+        return None
+    platform = source.platform.value if getattr(source, "platform", None) else ""
+    if platform != "zalo":
+        return None
+    user_id = getattr(source, "user_id", None)
+    if not user_id:
+        return None
+
+    store = getattr(gateway, "pairing_store", None)
+    if store is None:
+        return None
+
+    user_name = getattr(source, "user_name", None) or ""
+    chat_id = getattr(source, "chat_id", None) or user_id
+
+    if store._is_rate_limited(platform, str(user_id)):
+        msg = (
+            "Bạn vừa xin mã pair rồi. Đợi ~10 phút rồi gửi /pairzalo lại."
+        )
+    else:
+            code = store.generate_code(platform, str(user_id), user_name)
+            if code:
+                msg = (
+                    f"Mã pair Zalo của bạn: {code}\n\n"
+                    f"Gửi mã này cho chủ bot để duyệt:\n"
+                    f"hermes pairing approve zalo {code}"
+                )
+                logger.info(
+                    "pairzalo issued user=%s name=%s chat=%s",
+                    user_id,
+                    user_name,
+                    chat_id,
+                )
+            else:
+                msg = (
+                    "Không tạo được mã pair lúc này (quá tải / rate-limit / lockout). "
+                    "Thử lại sau."
+                )
+
+    async def _send() -> None:
+        try:
+            adapter = gateway._adapter_for_source(source)
+            if adapter is None:
+                logger.warning("pairzalo: no adapter for source")
+                return
+            await adapter.send(str(chat_id), msg)
+        except Exception as exc:
+            logger.warning("pairzalo send failed: %s", exc)
+
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(_send())
+    except RuntimeError:
+        # Not on an event loop — best-effort sync via bridge HTTP.
+        try:
+            import json
+            import urllib.request
+
+            port = int(os.getenv("ZALO_BRIDGE_PORT") or "3001")
+            body = json.dumps(
+                {"chatId": str(chat_id), "message": msg, "isGroup": False}
+            ).encode("utf-8")
+            req = urllib.request.Request(
+                f"http://127.0.0.1:{port}/send",
+                data=body,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=15).read()
+        except Exception as exc:
+            logger.warning("pairzalo sync send failed: %s", exc)
+
+    return {"action": "skip", "reason": "pairzalo_cmd"}
+
+
 def register(ctx) -> None:
     ctx.register_platform(
         name="zalo",
@@ -762,14 +1184,43 @@ def register(ctx) -> None:
         allow_update_command=True,
         platform_hint=(
             "You are chatting via Zalo (personal account bridge). "
-            "Keep replies concise. Markdown is limited — prefer plain text. "
-            "CRITICAL anti-hang rules: "
-            "(1) NEVER restart Hermes gateway / headless_full / kill bridge.js from a Zalo session — "
-            "that blocks for minutes waiting for approval and leaves the chat hung. "
-            "(2) To change allowlist: POST http://127.0.0.1:3001/allowlist "
-            'with JSON {\"users\":\"uid1,uid2\"} OR edit .env then POST the same — '
-            "hot-reload, no process restart. "
-            "(3) Prefer short tool loops; if a terminal needs elevated/approval, stop and tell the user instead of waiting. "
-            "Media: MEDIA: paths and images/files are delivered natively when possible."
+            "Keep replies concise. Zalo messages MUST be normal plain chat text only: no bold, no italic, no markdown, no * # ` ** ###, no fancy unicode fonts. Write like a normal Zalo CSKH message. ALWAYS Vietnamese with full diacritics (tiếng Việt có dấu), never khong dau. "
+            "GUEST / stranger DMs (not owner admin UID): you are ONLY a Hakinet parental-control consultant. "
+            "Load skill hakinet-zalo-consult and read C:/Dev/AgentLab/knowledge/hakinet/ "
+            "(PRODUCT, FEATURES, INSTALL, FAQ, PRICING_PAYMENT, CONTACT, CONSULTING_PLAYBOOK). "
+            "Answer ONLY Hakinet / kids screen-time / block game-web / install Android-iOS-Windows / pricing. "
+            "Refuse other topics politely; no code, no PC control, no non-Hakinet work. "
+            "Owner/admin chats: full Hermes agent (still obey anti-hang). "
+            "CRITICAL anti-hang (plugin pre_tool_call blocks instantly): "
+            "(1) NEVER restart gateway / headless_full / force_restart_gw / gw_relaunch / kill bridge.js / "
+            "long sleep/timeout loops from this session. "
+            "(2) Allowlist: POST http://127.0.0.1:3001/allowlist JSON only — hot-reload. "
+            "(3) Prefer short terminals; on block/deny pivot immediately. "
+            "(4) No auto-continue after idle timeout — finish with clear status. "
+            "Media: MEDIA: paths when possible. "
+            "Pairing: only /pairzalo|/pair; owner hermes pairing approve zalo <code>."
         ),
     )
+    # Hard block hang-class terminal before approval wait.
+    ctx.register_hook("pre_tool_call", _anti_hang_pre_tool_call)
+    # Explicit pairing only — no auto-code on first stranger DM.
+    ctx.register_hook("pre_gateway_dispatch", _pairzalo_pre_dispatch)
+    try:
+        ctx.register_command(
+            "pairzalo",
+            lambda _args: (
+                "Trên Zalo: gõ /pairzalo (hoặc /pair) để nhận mã pair. "
+                "Chủ bot duyệt: hermes pairing approve zalo <code>"
+            ),
+            description="Xin ma pair Zalo (chi khi go lenh)",
+        )
+        ctx.register_command(
+            "pair",
+            lambda _args: (
+                "Trên Zalo: gõ /pairzalo (hoặc /pair) để nhận mã pair. "
+                "Chủ bot duyệt: hermes pairing approve zalo <code>"
+            ),
+            description="Alias /pairzalo",
+        )
+    except Exception as exc:
+        logger.debug("pairzalo command register skipped: %s", exc)

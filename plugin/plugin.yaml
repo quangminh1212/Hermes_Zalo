@@ -1,11 +1,12 @@
 name: zalo-platform
 label: Zalo (personal)
 kind: platform
-version: 1.1.0
+version: 1.2.0
 description: >
   Hermes_Zalo — unofficial Zalo personal-account platform for Hermes Agent.
-  Pairs with the Node bridge in this repo (zca-js): text, media, typing,
-  chat-info, allowlist hot-reload. Ban risk — use a secondary Zalo account.
+  Local Node bridge (zca-js): text, media, typing, chat-info, allowlist hot-reload.
+  Opt-in pairing via /pairzalo (no auto pair codes on stranger DMs).
+  Risk of account ban — use a secondary Zalo account.
 author: Hermes_Zalo
 homepage: https://github.com/quangminh1212/Hermes_Zalo
 requires_env:
@@ -23,7 +24,7 @@ optional_env:
     prompt: "Allowed Zalo user IDs"
     password: false
   - name: ZALO_ALLOW_ALL_USERS
-    description: "Allow any Zalo user (dev only)"
+    description: "Allow any Zalo user (dev)"
     prompt: "Allow all users?"
     password: false
   - name: ZALO_HOME_CHANNEL
@@ -37,12 +38,4 @@ optional_env:
   - name: ZALO_FORWARD_SELF_MESSAGES
     description: "Forward messages you send from the phone (default true)"
     prompt: "Forward self messages?"
-    password: false
-  - name: ZALO_SEND_SEEN
-    description: "Mark inbound as seen (default true)"
-    prompt: "Send seen receipts?"
-    password: false
-  - name: ZALO_POLL_INTERVAL
-    description: "Adapter poll interval seconds (default 0.4)"
-    prompt: "Poll interval"
     password: false

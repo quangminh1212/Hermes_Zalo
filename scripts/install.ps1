@@ -34,16 +34,27 @@ try {
 }
 
 function Ensure-Junction($dst, $src) {
-  if (Test-Path $dst) {
-    $item = Get-Item $dst -Force
-    if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
-      Write-Host "Junction exists: $dst"
-      return
-    }
-    throw "Path exists and is not a junction: $dst — remove it manually."
-  }
   $parent = Split-Path $dst -Parent
   New-Item -ItemType Directory -Force -Path $parent | Out-Null
+  if (Test-Path $dst) {
+    $item = Get-Item $dst -Force
+    $isLink = [bool]($item.Attributes -band [IO.FileAttributes]::ReparsePoint)
+    $target = $null
+    if ($isLink -and $item.Target) {
+      $target = @($item.Target)[0]
+    }
+    $want = (Resolve-Path $src).Path
+    if ($isLink -and $target -and ((Resolve-Path $target -ErrorAction SilentlyContinue).Path -eq $want)) {
+      Write-Host "Junction OK: $dst -> $src"
+      return
+    }
+    if ($isLink) {
+      Write-Host "Re-pointing junction: $dst"
+      cmd /c "rmdir `"$dst`"" | Out-Null
+    } else {
+      throw "Path exists and is not a junction: $dst — remove it manually."
+    }
+  }
   cmd /c mklink /J "$dst" "$src" | Write-Host
 }
 
