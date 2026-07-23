@@ -70,6 +70,18 @@ Hermes_Zalo/
 
 ---
 
+## External module
+
+This repo is **not** part of Hermes core. Attach / detach when needed:
+
+```powershell
+# attach
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\Dev\Hermes_Zalo\scripts\install.ps1
+
+# detach (removes junctions; does not delete this repo)
+powershell -NoProfile -ExecutionPolicy Bypass -File C:\Dev\Hermes_Zalo\scripts\uninstall.ps1
+```
+
 ## Quick start (Windows)
 
 ### 1) Clone & install bridge
