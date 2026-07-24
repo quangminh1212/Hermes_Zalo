@@ -310,7 +310,23 @@ function attachListener(apiInst) {
         return;
       }
 
-      if (!body && !media) return;
+      if (!body && !media) {
+        // Research log: native VoIP / system events often arrive with empty body.
+        // zca-js Listener has no call events — we only observe opaque msgType.
+        try {
+          log(
+            JSON.stringify({
+              event: 'inbound_empty_no_media',
+              msgType: data.msgType || null,
+              threadId,
+              senderId,
+              keys: Object.keys(data || {}).slice(0, 40),
+              contentType: data.content == null ? null : typeof data.content,
+            }),
+          );
+        } catch {}
+        return;
+      }
 
       // Do NOT mark seen on receive by default. If gateway/bridge restarts
       // before a reply, early seen makes chats look "read" with no answer.

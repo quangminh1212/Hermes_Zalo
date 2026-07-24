@@ -7,11 +7,29 @@
 | **Chat text Zalo** → Hermes làm việc | ✅ | Owner full tools; guest = safe + Hakinet |
 | **Tin nhắn thoại (voice note)** → STT → Hermes | ✅ | Gateway auto-transcribe (`stt.enabled`) |
 | Hermes **trả lời thoại** (TTS voice note) | ✅ | Bật `/voice on` (voice_only) hoặc `/voice tts` |
-| **Cuộc gọi Zalo native** (VoIP/gọi điện trong app) | ❌ | `zca-js` **không** có API nghe/trả lời call |
+| **Pseudo-call `/call`** (voice note liên tục, gần realtime) | ✅ v1.3 | STT→agent→TTS ngắn; TTL 30 phút |
+| **Cuộc gọi Zalo native** (VoIP/gọi điện trong app) | ❌ | `zca-js` Listener **không** có event call; không API answer/reject |
 
-Native call (nút gọi trong Zalo) **không** đi qua bridge. Không có path hợp pháp/ổn định để Hermes “nhấc máy” cuộc gọi Zalo cá nhân.
+Native call (nút gọi trong Zalo) **không** đi qua bridge. Không thể “nhấc máy” cuộc gọi Zalo cá nhân bằng stack hiện tại (zca-js 2.1.2 chỉ có `message`, `typing`, `reaction`, … — không VoIP).
 
-## Luồng khuyến nghị (giao việc từ điện thoại)
+## Pseudo-call gần realtime (`/call`) — khuyến nghị khi muốn “gọi”
+
+```
+/call  →  bật session + voice_only TTS
+Bạn giữ micro gửi voice note liên tục
+  → bridge → STT vi → agent (prompt ngắn) → TTS voice note
+/call off  hoặc nói "cúp máy"
+```
+
+1. DM Hermes trên Zalo (owner).
+2. Gõ **`/call`** (hoặc `/goi`, “gọi hermes”).
+3. Bot xác nhận: native VoIP không được; dùng voice note.
+4. Gửi tin nhắn thoại ngắn rõ → chờ reply thoại/text ngắn → lặp.
+5. **`/call off`** hoặc nói “cúp máy” / “tạm biệt”.
+
+TTL session: 30 phút không hoạt động thì tự hết.
+
+## Luồng text / voice note đơn (không cần /call)
 
 ```
 Bạn (Zalo)  --voice note hoặc text-->  bridge :3001  -->  Hermes gateway
@@ -19,15 +37,10 @@ Bạn (Zalo)  --voice note hoặc text-->  bridge :3001  -->  Hermes gateway
                                               TTS (tuỳ mode) -->  voice note / text reply
 ```
 
-1. Đảm bảo gateway + bridge đang `connected` (`GET http://127.0.0.1:3001/health`).
-2. **Owner** (UID máy admin): chat DM bot Hermes trên Zalo.
-3. Lần đầu bật trả lời thoại (nếu chưa pre-seed):
-   - gõ `/voice on` → chỉ reply voice khi bạn gửi thoại  
-   - hoặc `/voice tts` → mọi reply đều có voice  
-   - `/voice off` → chỉ text  
-   - `/voice status`
-4. Gửi **tin nhắn thoại** hoặc text: “Tóm tắt file X”, “Chạy test …”, “Nhắc tôi …”.
-5. Hermes STT (local faster-whisper, `stt.local.language: vi`) → làm việc → reply text (+ voice nếu mode bật).
+1. Gateway + bridge `connected`.
+2. Owner DM bot.
+3. Tuỳ chọn: `/voice on` (nếu chưa bật).
+4. Gửi text hoặc voice note giao việc.
 
 ## Cấu hình Hermes (live home)
 

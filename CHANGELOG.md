@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **1.3.0** Pseudo-call `/call` | `/goi`: voice-note session + auto voice_only TTS (native VoIP still N/A)
+- Bridge: log inbound_empty_no_media for research
+- Docs: VOICE_TASKING pseudo-call guide
 - Docs: `docs/VOICE_TASKING.md` — Zalo voice-note → Hermes STT tasking; native VoIP call not supported (zca-js).
 
 
@@ -24,3 +27,4 @@
 ## 1.0.0
 
 - Initial bridge + Hermes plugin (text DM/group, QR pair)
+

@@ -1,11 +1,11 @@
 name: zalo-platform
 label: Zalo (personal)
 kind: platform
-version: 1.2.0
+version: 1.3.0
 description: >
   Hermes_Zalo — unofficial Zalo personal-account platform for Hermes Agent.
   Local Node bridge (zca-js): text, media, typing, chat-info, allowlist hot-reload.
-  Opt-in pairing via /pairzalo (no auto pair codes on stranger DMs).
+  Opt-in pairing via /pairzalo; pseudo-call /call via voice notes (native VoIP N/A).
   Risk of account ban — use a secondary Zalo account.
 author: Hermes_Zalo
 homepage: https://github.com/quangminh1212/Hermes_Zalo
