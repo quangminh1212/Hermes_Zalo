@@ -110,12 +110,16 @@ User Zalo  --gọi OA-->  Zalo ZCC SIP
    - TTS streaming → playback  
 5. Test: user Zalo gọi OA → bot nhấc → hội thoại.
 
-### Phase B — Personal reverse (R&D, không hứa ship)
+### Phase B — Personal reverse (R&D, đang chạy)
 
-1. Instrument Zalo PC: log call signaling khi có cuộc gọi tới.  
-2. Map payload `call_config` / `incomingCall`.  
-3. Prototype answer bằng inject vào process hoặc drive `zcall` (legal/ToS risk).  
-4. Chỉ khi protocol ổn định mới nối Hermes.
+**SoT tiến độ:** `research/zcall-pc/PHASE_B.md`
+
+1. ✅ Map asar zcall-v2: `handleControl(act=request)`, `recvSignal` → `$zcall.sendDataToNative`  
+2. ✅ Domains: `voicecall-wpa.*`, `qos.talk.zing.vn`  
+3. ✅ Artifacts: `ZaloData\cal\voip.log`, native `zcall_ia32.node`  
+4. ⬜ Live capture incoming call (`monitor-call.ps1`)  
+5. ⬜ Hook/inject full control payload  
+6. ⬜ Accept path + audio bridge → Hermes
 
 ### Phase C — Hybrid UX (đã có một phần)
 

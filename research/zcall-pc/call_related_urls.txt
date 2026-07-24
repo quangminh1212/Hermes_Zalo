@@ -1,0 +1,73 @@
+http - {}","Y-cWDC"],t,e),s(!0)})).catch((i=>{this.logger.zsymb(21,"m4oOSA",["{}Call active fail: http - {} - {}","sV18or"],t,e,JSON.stringify(i)),s(!1)}))}))}sendDeactiveToServer(e){return gc.default
+http 1.1"]),n.host&&n.path&&(delete n.path,delete n.pathname),this.proxy=n}callback(e,t){return r(this,void 0,void 0,(function*(){const{proxy:n,secureProxy:r}=this;let i;r?(p("Creating `tls.Socket`: %
+http 1.1"]),n.host&&n.path&&(delete n.path,delete n.pathname),this.proxy=n}callback(e,t){return r(this,void 0,void 0,(function*(){const{proxy:n,secureProxy:r}=this;let o;r?(p("Creating `tls.Socket`: %
+http(s)?:)?(\\/\\/)?((chat.${X}\\/(login|logout))|(id.${X}\\/account\\/)|(toolkit.zaloapp.com\\/v3\\/login))`,"i"),Z=/(\b)(on\S+)(\s*)=|javascript\:|(<\s*)(\/*)script/im,$=3,ee=6,te=5,ne=[l.MSG_SRC.PO
+http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; default-src 'none'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.zaloapp.com https://*.zdn.vn https://*.zadn.vn ht
+http.method":a};i.search&&(s["http.query"]=i.search);i.hash&&(s["http.fragment"]=i.hash);return r([e,"optionalAccess",e=>e.startChild,"call",e=>e({op:"http.client",description:`${a} ${o.getSanitizedUr
+http.method":s};o.search&&(a["http.query"]=o.search);o.hash&&(a["http.fragment"]=o.hash);return r([e,"optionalAccess",e=>e.startChild,"call",e=>e({op:"http.client",description:`${s} ${i.getSanitizedUr
+httpModule,(()=>f)),h);return o.createTransport(e,g)}},jADw:function(e,t){e.exports=require("async_hooks")},jGO8:function(e,t,n){"use strict";const r=n("ZC5O").fromCallback,o=n("wxPg");e.exports={read
+httpOnly:!0,secure:!0,expirationDate:(new Date).getTime()+6048e5,sameSite:"no_restriction"};await e.sender.session.cookies.set(Object(r.a)(Object(r.a)({},n),{},{url:"https://zaloapp.com",domain:"zaloa
+httpOnly:!0,secure:!0,expirationDate:(new Date).getTime()+6048e5};Ae.webContents.session.cookies.set(Object.assign(o,{url:"https://zaloapp.com",domain:"zaloapp.com"})).then(i).catch((e=>{T.zsymb(22,"5
+httpOnly:!0,secure:!0,expirationDate:(new Date).getTime()+6048e5};Ae.webContents.session.cookies.set(Object.assign(o,{url:"https://zaloapp.com",domain:"zaloapp.com"})).then(i).catch((e=>{b.zsymb(22,"5
+httprequest:20}],16:[function(b,c,d){(function(d){function f(){}function g(b){h.call(this,b);this.query=this.query||
+httprequest:20}],18:[function(b,c,d){function e(b){var c=b&&b.forceBase64;if(!m||c)this.supportsBinary=!1;f.call(this,b)}var f=b("../transport"),g=b("parseqs"),h=b("engine.io-parser");d=b("component-i
+httprequest:20}],19:[function(b,c,d){function e(b){b&&b.forceBase64&&(this.supportsBinary=!1);f.call(this,b)}var f=b("../transport"),g=b("engine.io-parser"),h=b("parseqs");d=b("component-inherit");var
+https.js:")||-1!==e.indexOf("node:https:")))}function l(e,t){return new l.Agent(e,t)}!function(e){class t extends i.EventEmitter{constructor(e,t){super();let n=t;"function"==typeof e?this.callback=e:e
+https.js:")||-1!==e.indexOf("node:https:")))}function u(e,t){return new u.Agent(e,t)}!function(e){class t extends o.EventEmitter{constructor(e,t){super();let n=t;"function"==typeof e?this.callback=e:e
+https:"!==window.location.protocol&&d.crossOrigin&&"anonymous"===d.crossOrigin.toLowerCase())f.isCrossOrigin=!1,r.release(a),cc.loader.loadImg(a,f,c,d);else{var b=e[a];if(b){for(var h=b.callbacks,u=0;
+https:":"http:"}set protocol(e){this.explicitProtocol=e}callback(e,t,n){throw new Error('"agent-base" has no default implementation, you must subclass and override `callback()`')}addRequest(e,t){const
+https:"])},oDsG:function(e,t,n){"use strict";var a=n("dehO");function i(){}function r(){}r.resetWarningCache=i,e.exports=function(){function e(e,t,n,i,r,s){if(s!==a){var o=new Error("Calling PropTypes
+https://")){let t=e.substr(8).trim();if(t)return t}return d}},ZALO_API_DM:d,DEFAULT_AUTH_DOMAIN:"https://wpa.zaloapp.com"}},XQrA:function(e,t,n){var r=n("mwFN"),i=n("q1Jy"),o=n("jK02"),a=n("w4Em"),s=n
+https://")){let t=e.substr(8).trim();if(t)return t}return l}},ZALO_API_DM:l,DEFAULT_AUTH_DOMAIN:"https://wpa.zaloapp.com"}},XQrA:function(e,t,n){var r=n("mwFN"),i=n("q1Jy"),o=n("jK02"),a=n("w4Em"),s=n
+https://");const i=[s.default.CONFIG_DOMAIN];if(i.includes("zalo.me")||i.push("zalo.me"),i.includes("zaloapp.com")||i.push("zaloapp.com"),i.some((t=>e.startsWith(`https://${t}/g/`))))this.autoSelectGr
+https://");const s=[o.default.CONFIG_DOMAIN];if(s.includes("zalo.me")||s.push("zalo.me"),s.includes("zaloapp.com")||s.push("zaloapp.com"),s.some((t=>e.startsWith(`https://${t}/g/`))))this.autoSelectGr
+https://${l.default.CONFIG_DOMAIN}/may-tinh`),this._sendMessageObject(t,a,!1,!1)}_loadMoreMessageBottom(e,t,n){return Xt.default.loadBottomMessagesForConversation(e,t,n)}generateReceiveCallMessage(e){
+https://*.zalo.me https://*.zdn.vn https://*.zadn.vn https://*.z-cdn.me https://*.zaloapp.com https://*.zing.vn https://*.google.com https://www.microsoft.com https://www.apple.com https://*.baomoi.co
+https://api.zaloapp.com/api/emoticon/sticker/webpc?eid=20695&size=130"}),o.a.createElement("span",{className:"videocall-message-content__subtitle"},t)),this.props.startGameMode?o.a.createElement("div"
+https://api.zaloapp.com/api/emoticon/sticker/webpc?eid=20695&size=130"}),r.a.createElement("span",{className:"videocall-message-content__subtitle"},t)),this.props.startGameMode?r.a.createElement("div"
+https://autotest-wpa.chat.zalo.me"+t.path,{zcommandId:t.commandId})}catch(n){if(n&&n.error_code==c.a)return{cmdId:e,err:n}}}return{err:null,cmdId:e}}async allApiCall(){const e=[];for(const t of i.a.ge
+https://autotest-wpa.chat.zalo.me"+t.path,{zcommandId:t.commandId})}catch(n){if(n&&n.error_code==c.a)return{cmdId:e,err:n}}}return{err:null,cmdId:e}}async allApiCall(){const e=[];for(const t of r.a.ge
+https://bkpc2mb.zaloapp.com"}getEmojiStatusDomain(){return this.getDomainByType(o.EMOJI_STATUS)}getAIFeaturesDomain(){return this.getDomainByType(o.AI_FEATURES)}};t.b=l},pVcU:function(e,t,n){"use stri
+https://bkpc2mb.zaloapp.com"}getEmojiStatusDomain(){return this.getDomainByType(s.EMOJI_STATUS)}getAIFeaturesDomain(){return this.getDomainByType(s.AI_FEATURES)}};t.b=l},pVcU:function(e,t,n){"use stri
+https://catalog.zalo.me",limit_total_product_create:10,beta_version:!1}};var D={call:{launch_native_in_startup:1,sync_call_message:{ui:1,db:1,transfer:1},retry_timers:[1e3,1e3,2e3,3e3,5e3,8e3,13e3],us
+https://catalog.zalo.me",limit_total_product_create:10,beta_version:!1}};var M={call:{launch_native_in_startup:1,sync_call_message:{ui:1,db:1,transfer:1},retry_timers:[1e3,1e3,2e3,3e3,5e3,8e3,13e3],us
+https://catalog.zalo.me",limit_total_product_create:10,beta_version:!1}};var w={call:{launch_native_in_startup:1,sync_call_message:{ui:1,db:1,transfer:1},retry_timers:[1e3,1e3,2e3,3e3,5e3,8e3,13e3],us
+https://catalog.zalo.me",limit_total_product_create:10,beta_version:!1}};var x={call:{launch_native_in_startup:1,sync_call_message:{ui:1,db:1,transfer:1},retry_timers:[1e3,1e3,2e3,3e3,5e3,8e3,13e3],us
+https://cloud.zbox.vn/pc-paywall/?utm_source=pc_entry&utm_medium=setting_sm_data_on_device_full_storage"}};var Z={only_admin_chat_setting:{enable_only_admin_chat_setting:1}};var J={block_msg_call_sett
+https://dev-webpush.api.zaloapp.com/subscription",null,a)}static convertOAIds(e){let t={oa_ids:e};t=JSON.stringify(t);const n=_.b.getProfileDomain()+"/api/social/oa/convertid?"+this._getCommonParams()
+https://dev-webpush.api.zaloapp.com/subscription",null,a)}static convertOAIds(e){let t={oa_ids:e};t=JSON.stringify(t);const n=f.b.getProfileDomain()+"/api/social/oa/convertid?"+this._getCommonParams()
+https://dev-webpush.api.zaloapp.com/subscription",null,a)}static convertOAIds(e){let t={oa_ids:e};t=JSON.stringify(t);const n=p.b.getProfileDomain()+"/api/social/oa/convertid?"+this._getCommonParams()
+https://dev-wpa.chat.zalo.me";if(e===o.ZALO_DEV_V2)return"https://staging-pcweb-wpa.chat.zalo.me";if(e===o.ZALO_DEV_V3)return"https://stg-wpa.chat.zalo.me";if(!s.default.useApiVoiceCallLive&&e===o.VOI
+https://dev-wpa.chat.zalo.me";if(e===s.ZALO_DEV_V2)return"https://staging-pcweb-wpa.chat.zalo.me";if(e===s.ZALO_DEV_V3)return"https://stg-wpa.chat.zalo.me";if(!i.default.useApiVoiceCallLive&&e===s.VOI
+https://id.${Je}/account/login`,apiDevLogin:`https://dev.chat.${Je}/login`,apiDevLoginOnAuth:`https://id.stg.${Je}`,uinDomain:`https://chat.${Je}`,apiVoiceCallDomain:`https://voicecall-wpa.${Je}`,apiC
+https://id.${e}/account/login`,apiDevLogin:`https://id.${e}/account/chat/devlogin`,uinDomain:`https://chat.${e}`,apiLanFriend:`https://friendlan-wpa.api.${e}`};for(let n in t)n&&t[n]&&(Ze[n]=t[n])},tt
+https://id.${e}/account/login`,apiDevLogin:`https://id.${e}/account/chat/devlogin`,uinDomain:`https://chat.${e}`,apiLanFriend:`https://friendlan-wpa.api.${e}`};for(let n in t)n&&t[n]&&(rt[n]=t[n])},ot
+https://id.${nt}/account/login`,apiDevLogin:`https://dev.chat.${nt}/login`,apiDevLoginOnAuth:`https://id.stg.${nt}`,uinDomain:`https://chat.${nt}`,apiVoiceCallDomain:`https://voicecall-wpa.${nt}`,apiC
+https://qos.talk.zing.vn/api/qos/uploadcalllog",!0),i.onload=()=>{this.logInfo("sendCallLogQos: log uploaded",i.responseText)},i.onerror=e=>{this.logError("sendCallLogQos: error uploading log:",e)};le
+https://qos.talk.zing.vn/api/qos/uploadcalllog",!0),o.onload=()=>{this.logInfo("sendCallLogQos: log uploaded",o.responseText)},o.onerror=e=>{this.logError("sendCallLogQos: error uploading log:",e)};le
+https://qos.talk.zing.vn/api/qos/uploadcalllog",!0),r.onload=()=>{this.logInfo("sendCallLogQos: log uploaded",r.responseText)},r.onerror=e=>{this.logError("sendCallLogQos: error uploading log:",e)};le
+https://qos.talk.zing.vn/api/qos/uploadpc"},newInstallSuccess:!1,enable_discovery:0,tabbedGlobalSearchResult:!0,enableFileGlobalSearch:!0,showNewWelcomeScreen:1,zAminKey:[122,65,108,79].map((e=>String
+https://res-zalo.zadn.vn/upload/media/2017/1/9/o_a62421af372795dd-0_1483937772450.jpg"}};var ae=ne;var ie={mediaStatus:{debug:{enable:!0},delay_download_automatically:1e3,delay_display_media_status:10
+https://res-zalo.zadn.vn/upload/media/2017/1/9/o_a62421af372795dd-0_1483937772450.jpg"}};var ae=ne;var se={mediaStatus:{debug:{enable:!0},delay_download_automatically:1e3,delay_display_media_status:10
+https://res-zalo.zadn.vn/upload/media/2017/1/9/o_a62421af372795dd-0_1483937772450.jpg"}};var oe=ie;var se={mediaStatus:{debug:{enable:!0},delay_download_automatically:1e3,delay_display_media_status:10
+https://res-zaloapp.zadn.vn/pc/ZaloSetup_2.7.4_v67.exe",mac:"https://res-zaloapp.zadn.vn/mac/Zalo-3.2.64.dmg",windows:"https://res-zaloapp.zadn.vn/hybrid/Zalo-3.2.65-win-x86.exe",default:`https://${Je
+https://res-zaloapp.zadn.vn/pc/ZaloSetup_2.7.4_v67.exe",mac:"https://res-zaloapp.zadn.vn/mac/Zalo-3.2.64.dmg",windows:"https://res-zaloapp.zadn.vn/hybrid/Zalo-3.2.65-win-x86.exe",default:`https://${nt
+https://srv.mp3.zing.vn/zdl","https://zaloapp.com/zdl","https://mp3.zing.vn/zdl","https://n.zing.vn/zdl","https://srv.zaloapp.com/zdl","https://srv.zingmp3.vn/zdl","https://srv.zconf.me/zdl","https://
+https://zalo.me",domain:"zalo.me"})).then(i).catch((e=>{T.zsymb(22,"27Ayrp",["error on settign cookies","CwHwIz"],e)}))}}}r||(global._callCheckCookies=!0,Sn())}function Sn(){if(!global._callCheckCooki
+https://zalo.me",domain:"zalo.me"})).then(i).catch((e=>{b.zsymb(22,"27Ayrp",["error on settign cookies","CwHwIz"],e)}))}}}r||(global._callCheckCookies=!0,wn())}function wn(){if(!global._callCheckCooki
+https://zaloapp${n}.com`,wpa_s:`https://wpa.zaloapp${n}.com`});let t=[];return e.forEach((e=>{Math.random()>=.5&&t.push(Object.assign(e,{}))})),t.unshift({zdm_s:"https://zalo.cx",wpa_s:"https://wpa.za
+https://zaloapp.com",De).then((()=>{})),Ae.webContents.session.cookies.remove("https://zalo.me",De).then((()=>{})),Ae.webContents.session.cookies.flushStore().then((()=>{}))):T.zsymb(22,"3GGnIo",["mig
+https://zaloapp.com",De).then((()=>{})),Ae.webContents.session.cookies.remove("https://zalo.me",De).then((()=>{})),Ae.webContents.session.cookies.flushStore().then((()=>{}))):b.zsymb(22,"3GGnIo",["mig
+https://zaloapp.com"}).then((e=>{r.zsymb(4,"UJmHSo",["goCheckCookieFirst done zaloapp","yYs12n"]),global.zOldCookiesData={cookies:e},l()})).catch((e=>{r.zsymb(4,"Rft3hC",["goCheckCookieFirst onErr zal
+https://zaloapp.com"},e);return Qe.a.instance().sendMessageE2ee(t,a,(()=>qe.a.forwardMessage(t,a,h,o,_,p,u,A)))})):e().then((e=>{const n=Object(i.a)(Object(i.a)({},m),e);return o.default.forwardMessag
+https://zaloapp.com"},e);return Qe.a.instance().sendMessageE2ee(t,a,(()=>qe.a.forwardMessage(t,a,h,o,f,p,u,A)))})):e().then((e=>{const n=Object(i.a)(Object(i.a)({},m),e);return o.default.forwardMessag
+https://zaloapp.com"},e);return Ye.a.instance().sendMessageE2ee(t,a,(()=>qe.a.forwardMessage(t,a,h,r,E,g,A,u)))})):e().then((e=>{const n=Object(s.a)(Object(s.a)({},m),e);return r.default.forwardMessag
+https://zalogit2.zing.vn/zalo-pc/zpc-cli.git#release"},"externals":[]}')},"km3+":function(e,t,n){"use strict";e.exports=Function.prototype.call},kn3K:function(e,t,n){Object.defineProperty(t,"__esModul
+https://zalogit2.zing.vn/zalo-pc/zpc-cli.git#release"},"externals":[]}')},"km3+":function(e,t,n){"use strict";e.exports=Function.prototype.call},kpp9:function(e,t,n){"use strict";const r=n("NkYg").Buf
+https://zalogit2.zing.vn/zalo-pc/zpc-cli.git#release"},"externals":[]}')},"l49+":function(e,t,a){"use strict";const r=(e,t,a,r)=>{if("length"===a||"prototype"===a)return;if("arguments"===a||"caller"==
+https://zclient.zalo","zclient.zalo")}static flushCookie(e,t){this.__flushCookie(e,t,"https://zaloapp.com","zaloapp.com")}static setRememberMe(t){i.default.getInstance().setItem(c,t?1:0),setTimeout(((
+https://zclient.zalo","zclient.zalo")}static flushCookie(e,t){this.__flushCookie(e,t,"https://zaloapp.com","zaloapp.com")}static setRememberMe(t){r.default.getInstance().setItem(c,t?1:0),setTimeout(((
+https://zlog.zingmp3.vn","https://zlog.zing.vn"];const d="zaloapp.com",l=[];const u=new class{constructor(){this._lastFetchTime={},this._lastResult={},this._pending={},this._block=!1}validCache(e){ret
+https://zlog.zingmp3.vn","https://zlog.zing.vn"];const l="zaloapp.com",u=[];const d=new class{constructor(){this._lastFetchTime={},this._lastResult={},this._pending={},this._block=!1}validCache(e){ret
+https?:\/\//i.test(s)){const{protocol:t,hostname:n}=new URL(e);s=`${t}//${n}${s}`}const c=null==t||null===(i=t.onRedirect)||void 0===i?void 0:i.call(t,o,s,a);c?n.reject(c):this.fetch(s,t).then((e=>n.r
+https?:\\/\\/(?:${["zaloapp.com","zalo.me"].map((e=>e.replace(/\./g,"\\."))).join("|")})\\/g\\/`),invidualLinkRegEx:new RegExp(`^(https?:\\/\\/)?(?:${["zaloapp.com","zalo.me"].map((e=>e.replace(/\./g,
