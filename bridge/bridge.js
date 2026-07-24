@@ -30,6 +30,23 @@ function getArg(name, def) {
   return i !== -1 && args[i + 1] ? args[i + 1] : def;
 }
 
+if (args.includes('--help') || args.includes('-h')) {
+  console.log(`Hermes_Zalo bridge — local HTTP API for Zalo personal (zca-js)
+
+Usage:
+  node bridge.js [--port 3001] [--session DIR] [--pair-only]
+
+Options:
+  --port N       Listen port (default 3001, or ZALO_BRIDGE_PORT)
+  --session DIR  Session/credentials directory
+  --pair-only    QR pair then exit (no HTTP server)
+  -h, --help     Show this help
+
+Endpoints (127.0.0.1 only): GET /health /messages /me /qr  POST /send /pair ...
+`);
+  process.exit(0);
+}
+
 const PORT = parseInt(getArg('port', process.env.ZALO_BRIDGE_PORT || '3001'), 10);
 const SESSION_DIR = getArg(
   'session',
@@ -839,7 +856,7 @@ if (PAIR_ONLY) {
     });
 } else {
   loadPersistedQueue();
-  app.listen(PORT, '127.0.0.1', () => {
+  const server = app.listen(PORT, '127.0.0.1', () => {
     log(`🌉 Zalo bridge listening on port ${PORT}`);
     log(`📁 Session: ${SESSION_DIR}`);
     log(`🔒 Allow: ${ALLOW_ALL ? '*' : [...ALLOWED].join(', ') || '(none)'}`);
@@ -847,5 +864,16 @@ if (PAIR_ONLY) {
       lastError = e?.message || String(e);
       log('boot error:', lastError);
     });
+  });
+  server.on('error', (err) => {
+    if (err && err.code === 'EADDRINUSE') {
+      console.error(
+        `Port ${PORT} already in use (another bridge instance?). ` +
+          `Use --port N or stop the existing process. Health: http://127.0.0.1:${PORT}/health`,
+      );
+      process.exit(1);
+    }
+    console.error('HTTP server error:', err?.message || err);
+    process.exit(1);
   });
 }
