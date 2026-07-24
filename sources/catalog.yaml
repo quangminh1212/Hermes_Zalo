@@ -1,0 +1,45 @@
+schema_version: "1"
+lab: hermes-zalo
+entries:
+  - id: zca-js
+    url: https://github.com/RFS-ADRENO/zca-js
+    license: MIT
+    status: integrated
+    role: Unofficial Zalo personal API used by bridge
+    evidence:
+      - bridge/package.json
+      - bridge/bridge.js
+  - id: hermes-agent
+    url: https://github.com/NousResearch/hermes-agent
+    license: MIT
+    status: integrated
+    role: Platform plugin host
+    evidence:
+      - plugin/adapter.py
+      - plugin/plugin.yaml
+  - id: openzca
+    url: https://github.com/darkamenosa/openzca
+    license: MIT
+    status: referenced
+    role: CLI alternative for Zalo personal (OpenClaw)
+    evidence: []
+  - id: openzalo
+    url: https://github.com/darkamenosa/openzalo
+    license: MIT
+    status: referenced
+    role: OpenClaw channel plugin via openzca
+    evidence: []
+  - id: zaloclaw
+    url: https://github.com/monas-team/zaloclaw
+    license: upstream
+    status: referenced
+    role: Full-feature OpenClaw Zalo channel (feature parity reference)
+    evidence: []
+  - id: openclaw-zalouser
+    url: https://github.com/openclaw/openclaw
+    license: upstream
+    status: integrated
+    role: zalouser pattern inspiration (local bridge + platform)
+    evidence:
+      - README.md
+      - bridge/bridge.js
