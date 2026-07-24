@@ -104,3 +104,9 @@ $env:PYTHONPATH = "$env:LOCALAPPDATA\hermes\hermes-agent"
 - Unofficial personal client — dùng acc phụ.
 - Voice note lớn / mạng chậm → STT timeout; nói ngắn rõ.
 - Guest không được full tools — chỉ CSKH / safe.
+
+## Tự bắt máy cuộc gọi VoIP?
+
+**Personal (zca-js):** không. **Official path:** Zalo OA + ZCC SIP.  
+**R&D:** reverse Zalo PC `zcall` (native RTP/ZRTP).  
+Chi tiết research: **`docs/CALL_AUTO_ANSWER_RESEARCH.md`**.
