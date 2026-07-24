@@ -1,0 +1,24 @@
+{
+  "asar": "C:\\Users\\GHC\\AppData\\Local\\Programs\\Zalo\\Zalo-26.7.10\\resources\\app.asar",
+  "size": 171179386,
+  "scannedAt": "2026-07-24T07:53:39.309Z",
+  "counts": {
+    "[zcall-v2]": 8,
+    "handleControl": 18,
+    "handleRecvSignal": 32,
+    "_sendToNative": 52,
+    "isIncomingCallEvent": 12,
+    "group_request": 8,
+    "recvSignal": 4,
+    "voicecall-wpa": 5,
+    "apiVoiceCallDomain": 9,
+    "generateReceiveCallMessage": 12,
+    "isZaloCalling": 4,
+    "enable_ipc_call": 49,
+    "initCall": 8,
+    "sendDataToNative": 8,
+    "onCallRequest": 8,
+    "onCallSignal": 8,
+    "onCallUpdate": 8
+  }
+}

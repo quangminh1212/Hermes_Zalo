@@ -918,6 +918,304 @@ async def _standalone_send(chat_id: str, message: str, **kwargs) -> dict:
 
 _PAIR_CMDS = frozenset({"pairzalo", "pair", "pair_zalo"})
 
+# Pseudo realtime "call" over Zalo voice notes (native VoIP is not available in zca-js).
+_CALL_START_CMDS = frozenset(
+    {
+        "call",
+        "goi",
+        "gọi",
+        "call_on",
+        "goi_on",
+        "startcall",
+        "voice_call",
+    }
+)
+_CALL_END_CMDS = frozenset(
+    {
+        "call_off",
+        "goi_off",
+        "endcall",
+        "hangup",
+        "cup",
+        "cúp",
+        "cupmay",
+        "cúp_máy",
+    }
+)
+_CALL_END_PHRASES = (
+    "cúp máy",
+    "cup may",
+    "cúp máy đi",
+    "kết thúc gọi",
+    "ket thuc goi",
+    "tắt cuộc gọi",
+    "tat cuoc goi",
+    "end call",
+    "hang up",
+    "bye hermes",
+)
+_CALL_TTL_SEC = 30 * 60
+# chat_id -> unix start time
+_call_sessions: Dict[str, float] = {}
+
+_CALL_MODE_PREFIX = (
+    "[ZALO_PSEUDO_CALL]\n"
+    "User is in a live voice-note call with you over Zalo (NOT native VoIP — zca-js cannot answer app calls).\n"
+    "Rules: reply SHORT spoken Vietnamese 1-3 sentences, plain text only, no markdown.\n"
+    "Act fast on tasks. If user says cúp máy / tạm biệt / end call — acknowledge and stop the call.\n"
+    "Prefer voice-friendly wording.\n\n"
+    "User said:\n"
+)
+
+
+def _call_session_key(source) -> str:
+    return str(getattr(source, "chat_id", None) or getattr(source, "user_id", None) or "")
+
+
+def _call_session_active(chat_id: str) -> bool:
+    import time
+
+    if not chat_id:
+        return False
+    started = _call_sessions.get(chat_id)
+    if started is None:
+        return False
+    if time.time() - started > _CALL_TTL_SEC:
+        _call_sessions.pop(chat_id, None)
+        return False
+    return True
+
+
+def _call_session_start(chat_id: str) -> None:
+    import time
+
+    if chat_id:
+        _call_sessions[chat_id] = time.time()
+
+
+def _call_session_end(chat_id: str) -> None:
+    if chat_id:
+        _call_sessions.pop(chat_id, None)
+
+
+def _enable_gateway_voice_only(gateway, source) -> None:
+    """Best-effort: turn on voice_only TTS replies for this Zalo chat."""
+    try:
+        platform = getattr(source, "platform", None)
+        chat_id = getattr(source, "chat_id", None)
+        if platform is None or not chat_id:
+            return
+        if hasattr(gateway, "_voice_key") and hasattr(gateway, "_voice_mode"):
+            key = gateway._voice_key(platform, str(chat_id))
+            gateway._voice_mode[key] = "voice_only"
+            if hasattr(gateway, "_save_voice_modes"):
+                gateway._save_voice_modes()
+        adapters = getattr(gateway, "adapters", None) or {}
+        adapter = adapters.get(platform) if not isinstance(adapters, dict) else adapters.get(platform)
+        if adapter is None and isinstance(adapters, dict):
+            # Platform enum / string key variants
+            for k, v in adapters.items():
+                kv = getattr(k, "value", k)
+                if str(kv) == "zalo" or k == platform:
+                    adapter = v
+                    break
+        if adapter is not None and hasattr(gateway, "_set_adapter_auto_tts_enabled"):
+            gateway._set_adapter_auto_tts_enabled(adapter, str(chat_id), enabled=True)
+    except Exception as exc:
+        logger.debug("enable voice_only failed: %s", exc)
+
+
+def _disable_gateway_voice_only(gateway, source) -> None:
+    try:
+        platform = getattr(source, "platform", None)
+        chat_id = getattr(source, "chat_id", None)
+        if platform is None or not chat_id:
+            return
+        if hasattr(gateway, "_voice_key") and hasattr(gateway, "_voice_mode"):
+            key = gateway._voice_key(platform, str(chat_id))
+            gateway._voice_mode[key] = "off"
+            if hasattr(gateway, "_save_voice_modes"):
+                gateway._save_voice_modes()
+        adapters = getattr(gateway, "adapters", None) or {}
+        adapter = None
+        if isinstance(adapters, dict):
+            adapter = adapters.get(platform)
+            if adapter is None:
+                for k, v in adapters.items():
+                    kv = getattr(k, "value", k)
+                    if str(kv) == "zalo" or k == platform:
+                        adapter = v
+                        break
+        if adapter is not None and hasattr(gateway, "_set_adapter_auto_tts_disabled"):
+            gateway._set_adapter_auto_tts_disabled(adapter, str(chat_id), disabled=True)
+    except Exception as exc:
+        logger.debug("disable voice_only failed: %s", exc)
+
+
+async def _zalo_quick_reply(gateway, source, chat_id: str, msg: str) -> None:
+    try:
+        adapter = gateway._adapter_for_source(source) if hasattr(gateway, "_adapter_for_source") else None
+        if adapter is not None:
+            await adapter.send(str(chat_id), msg)
+            return
+    except Exception as exc:
+        logger.warning("call-mode quick reply failed: %s", exc)
+    # HTTP fallback
+    try:
+        import json
+        import urllib.request
+
+        port = int(os.getenv("ZALO_BRIDGE_PORT") or "3001")
+        body = json.dumps(
+            {"chatId": str(chat_id), "message": msg, "isGroup": False}
+        ).encode("utf-8")
+        req = urllib.request.Request(
+            f"http://127.0.0.1:{port}/send",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=15).read()
+    except Exception as exc:
+        logger.warning("call-mode HTTP reply failed: %s", exc)
+
+
+def _schedule_zalo_reply(gateway, source, chat_id: str, msg: str) -> None:
+    async def _send() -> None:
+        await _zalo_quick_reply(gateway, source, chat_id, msg)
+
+    try:
+        loop = asyncio.get_running_loop()
+        loop.create_task(_send())
+    except RuntimeError:
+        try:
+            asyncio.run(_send())
+        except Exception:
+            pass
+
+
+def _normalize_cmd_token(text: str) -> str:
+    first = (text or "").strip().split(None, 1)[0].lower() if (text or "").strip() else ""
+    return first.lstrip("/!").replace("-", "_")
+
+
+def _parse_call_command(text: str) -> Optional[str]:
+    """Return 'start' | 'end' | None for explicit call control messages only."""
+    raw = (text or "").strip()
+    if not raw:
+        return None
+    text_l = raw.lower().strip()
+    if text_l in {"gọi hermes", "goi hermes", "bắt đầu gọi", "bat dau goi"}:
+        return "start"
+
+    parts = text_l.split()
+    if not parts:
+        return None
+    head = parts[0].lstrip("/!").replace("-", "_")
+    # /call off | /call end | /goi off
+    if head in {"call", "goi", "gọi", "voice_call"} and len(parts) >= 2:
+        tail = parts[1].lstrip("/!").replace("-", "_")
+        if tail in {"off", "end", "stop", "out", "tat", "tắt"}:
+            return "end"
+        if tail in {"on", "start", "bat", "bật"}:
+            return "start"
+    if head in _CALL_END_CMDS:
+        return "end"
+    if head in _CALL_START_CMDS:
+        return "start"
+    return None
+
+
+def _call_pre_dispatch(event=None, gateway=None, **_kwargs):
+    """Pseudo realtime call over voice notes — /call start|stop + session rewrite.
+
+    Native Zalo VoIP (nút gọi trong app) is NOT supported by zca-js. This mode
+    makes voice-note turns feel like a call: short spoken replies + auto TTS.
+    """
+    if event is None or gateway is None:
+        return None
+    source = getattr(event, "source", None)
+    if source is None:
+        return None
+    platform = source.platform.value if getattr(source, "platform", None) else ""
+    if platform != "zalo":
+        return None
+
+    text = (getattr(event, "text", None) or "").strip()
+    chat_id = _call_session_key(source)
+    if not chat_id:
+        return None
+
+    text_l = text.lower()
+    call_cmd = _parse_call_command(text) if text else None
+
+    # Explicit start
+    if call_cmd == "start":
+        _call_session_start(chat_id)
+        _enable_gateway_voice_only(gateway, source)
+        msg = (
+            "Chế độ GỌI (voice note realtime) đã BẬT.\n\n"
+            "Lưu ý: cuộc gọi Zalo native (nút gọi điện/video trong app) "
+            "KHÔNG thể nhấc máy — zca-js không có VoIP API.\n\n"
+            "Cách dùng gần realtime nhất:\n"
+            "1) Giữ micro gửi tin nhắn thoại (hoặc gõ text ngắn)\n"
+            "2) Hermes nghe (STT) → làm việc → trả lời thoại/text ngắn\n"
+            "3) Cúp máy: gõ /call off hoặc nói cúp máy / tạm biệt\n\n"
+            "Hết hạn tự động sau 30 phút im lặng."
+        )
+        _schedule_zalo_reply(gateway, source, chat_id, msg)
+        logger.info("zalo pseudo-call START chat=%s", chat_id)
+        return {"action": "skip", "reason": "zalo_call_start"}
+
+    # Explicit end command
+    if call_cmd == "end" and not _call_session_active(chat_id):
+        # end while idle — notify only
+        _schedule_zalo_reply(
+            gateway,
+            source,
+            chat_id,
+            "Không có cuộc gọi voice note đang mở. Gõ /call để bật.",
+        )
+        return {"action": "skip", "reason": "zalo_call_end_idle"}
+
+    if call_cmd == "end" and _call_session_active(chat_id):
+        was = _call_session_active(chat_id)
+        _call_session_end(chat_id)
+        _disable_gateway_voice_only(gateway, source)
+        msg = (
+            "Đã cúp máy (tắt chế độ gọi voice note)."
+            if was
+            else "Không có cuộc gọi voice note đang mở."
+        )
+        _schedule_zalo_reply(gateway, source, chat_id, msg)
+        logger.info("zalo pseudo-call END chat=%s was=%s", chat_id, was)
+        return {"action": "skip", "reason": "zalo_call_end"}
+
+    # Active session: end phrases or rewrite for short spoken replies
+    if _call_session_active(chat_id):
+        if text and any(p in text_l for p in _CALL_END_PHRASES):
+            _call_session_end(chat_id)
+            _disable_gateway_voice_only(gateway, source)
+            # Still let the agent say goodbye once
+            return {
+                "action": "rewrite",
+                "text": (
+                    "[ZALO_PSEUDO_CALL_END]\n"
+                    "User ended the voice-note call. Reply one short Vietnamese goodbye, plain text.\n\n"
+                    f"User: {text}"
+                ),
+            }
+        # Touch TTL
+        _call_session_start(chat_id)
+        body = text if text else "[tin nhắn thoại / media — chờ STT]"
+        return {
+            "action": "rewrite",
+            "text": _CALL_MODE_PREFIX + body,
+        }
+
+    return None
+
+
 # Commands that historically hung Zalo sessions for 5–30 min (approval + idle).
 # Instant-block — never wait for approve/timeout.
 _HANG_CMD_PATTERNS = tuple(
@@ -1198,13 +1496,17 @@ def register(ctx) -> None:
             "(3) Prefer short terminals; on block/deny pivot immediately. "
             "(4) No auto-continue after idle timeout — finish with clear status. "
             "Media: MEDIA: paths when possible. "
-            "Pairing: only /pairzalo|/pair; owner hermes pairing approve zalo <code>."
+            "Pairing: only /pairzalo|/pair; owner hermes pairing approve zalo <code>. "
+            "Voice call: native Zalo VoIP is NOT available. Pseudo-call: user sends /call then voice notes; "
+            "keep replies short spoken Vietnamese; /call off or 'cúp máy' ends session."
         ),
     )
     # Hard block hang-class terminal before approval wait.
     ctx.register_hook("pre_tool_call", _anti_hang_pre_tool_call)
     # Explicit pairing only — no auto-code on first stranger DM.
     ctx.register_hook("pre_gateway_dispatch", _pairzalo_pre_dispatch)
+    # Pseudo realtime call (voice-note session) — native VoIP impossible.
+    ctx.register_hook("pre_gateway_dispatch", _call_pre_dispatch)
     try:
         ctx.register_command(
             "pairzalo",
@@ -1222,5 +1524,22 @@ def register(ctx) -> None:
             ),
             description="Alias /pairzalo",
         )
+        ctx.register_command(
+            "call",
+            lambda _args: (
+                "Trên Zalo: /call bật chế độ gọi voice-note (gần realtime). "
+                "Gửi tin nhắn thoại liên tục; /call off hoặc nói cúp máy để tắt. "
+                "Cuộc gọi Zalo native (nút gọi app) KHÔNG hỗ trợ."
+            ),
+            description="Pseudo voice call via voice notes (not native VoIP)",
+        )
+        ctx.register_command(
+            "goi",
+            lambda _args: (
+                "Alias /call — bật chế độ gọi voice-note trên Zalo. "
+                "Native VoIP không hỗ trợ."
+            ),
+            description="Alias /call (tieng Viet)",
+        )
     except Exception as exc:
-        logger.debug("pairzalo command register skipped: %s", exc)
+        logger.debug("pairzalo/call command register skipped: %s", exc)

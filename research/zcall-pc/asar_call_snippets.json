@@ -1,0 +1,148 @@
+{
+  "[zcall-v2]": [
+    {
+      "idx": 9721145,
+      "snip": "s._resetChatBoxInput.bind(this),this._handleForwardedMessageFailure=this._handleForwardedMessageFailure.bind(this),this._handleMessageFailure=this._handleMessageFailure.bind(this),Le.a.current=this._uploadDragFile,Me.a.current=this._getInputboxRef.bind(this),tt.a.bindShowLocalMessage(this._showLocalMessage),tt.a.bindSentMessage(this._sentMessage),this.makeCall=()=>{this.Logger.zsymb(21,\"Rggc1o\",[\"[zcall-v2] Call is not supported!\",\"GLqz3X\"])},j.a&&!vn&&(j.c.bindDispatch(this._eventStore.dispatch),j.c.bindCallbackGenerateReceiveCallMessage(this.generateReceiveCallMessage.bind(this)),this._videoCall=async(e=!0,t=null)=>{const n=await this._getFullInfoConversation();if(n.isGroup?W.default.logAction(2020201):W.default.logAction(e?10642:10641),!j.c.isSupport())return;if(j.c.isCalling())return void L.defa"
+    },
+    {
+      "idx": 12877433,
+      "snip": "ect(i.a)({},e.params.options),{},{onSuccess:e.onSuccess,onError:e.onError})):r()};this.retryQueue.push({callId:a,params:{command:e,error:t,options:n},onSuccess:(...e)=>{const{onSuccess:t}=n||{};\"function\"==typeof t&&t(...e),r()},onError:(...e)=>{const{onError:t}=n||{};\"function\"==typeof t&&t(...e),r()}}),this.isRetryQueueFree&&r()},this.logError=c.default.logCoreError.bind(c.default.logCoreError,\"[zcall-v2] call-helper:\"),this.lastedActionCallValue=ae,this.sendLogEndCallTimerId=null,this.requestQueue=P(),this.retryQueue=[],this.isRetryQueueFree=!0,this.networkStatus=T.a.NOT_SET,this.countContinuouslyPressRejectCall=0,this.alreadyShowRejectCallSnackbar=!1,this.callRunning=!1,this.deviceListData=null,this.handleSendSignalError=this.handleSendSignalError.bind(this),this.handleRecvSignal=this.handleRecv"
+    },
+    {
+      "idx": 34196235,
+      "snip": "s._resetChatBoxInput.bind(this),this._handleForwardedMessageFailure=this._handleForwardedMessageFailure.bind(this),this._handleMessageFailure=this._handleMessageFailure.bind(this),Pe.a.current=this._uploadDragFile,De.a.current=this._getInputboxRef.bind(this),tt.a.bindShowLocalMessage(this._showLocalMessage),tt.a.bindSentMessage(this._sentMessage),this.makeCall=()=>{this.Logger.zsymb(21,\"Rggc1o\",[\"[zcall-v2] Call is not supported!\",\"GLqz3X\"])},j.a&&!vn&&(j.c.bindDispatch(this._eventStore.dispatch),j.c.bindCallbackGenerateReceiveCallMessage(this.generateReceiveCallMessage.bind(this)),this._videoCall=async(e=!0,t=null)=>{const n=await this._getFullInfoConversation();if(n.isGroup?W.default.logAction(2020201):W.default.logAction(e?10642:10641),!j.c.isSupport())return;if(j.c.isCalling())return void P.defa"
+    }
+  ],
+  "generateReceiveCallMessage": [
+    {
+      "idx": 9721295,
+      "snip": "ndleMessageFailure.bind(this),Le.a.current=this._uploadDragFile,Me.a.current=this._getInputboxRef.bind(this),tt.a.bindShowLocalMessage(this._showLocalMessage),tt.a.bindSentMessage(this._sentMessage),this.makeCall=()=>{this.Logger.zsymb(21,\"Rggc1o\",[\"[zcall-v2] Call is not supported!\",\"GLqz3X\"])},j.a&&!vn&&(j.c.bindDispatch(this._eventStore.dispatch),j.c.bindCallbackGenerateReceiveCallMessage(this.generateReceiveCallMessage.bind(this)),this._videoCall=async(e=!0,t=null)=>{const n=await this._getFullInfoConversation();if(n.isGroup?W.default.logAction(2020201):W.default.logAction(e?10642:10641),!j.c.isSupport())return;if(j.c.isCalling())return void L.default.createInfo(z.a.str(j.b.IN_CALL));let a=t||n;if(a.userId&&this.ownUser.userId){let t,n,i={lastSmsLocalId:a.lastSmsLocalId,displayName:a.displayName,userId:a.userId"
+    },
+    {
+      "idx": 9722062,
+      "snip": ":a.lastSmsLocalId,displayName:a.displayName,userId:a.userId},r=!1;if(a.userId.startsWith(M.GROUPID_PREFIX)?r=!0:t=[a.userId],r)return void Pe.ModalManagerV2.openModal({windowId:this.windowId,name:M.ModalIdentitiesDefine.GROUP_CALL,params:{conversation:a,data:{isVideo:e,generateCallMessage:this._generateCallMessage.bind(this),maxUsers:l.default.group_call_max_users}}});j.c.makeCall(t,e,r,(e=>{this.generateReceiveCallMessage(e),e.caller&&e.duration>0&&ce.b.updateLastActionTime(i.userId,this._eventStore.dispatch,-1,ce.a.CALL)}),n)}},this.makeCall=this._videoCall.bind(this)),this._linkPreviewManager=o.ModuleContainer.resolve(it.b)}get Logger(){return this._Logger||(this._Logger=o.ModuleContainer.resolve(et.ZLoggerFactory).createZLogger(\"ui\",[\"chat-box-controller\"])),this._Logger}get saveE2eeHash(){if(!this._saveE2eeHas"
+    },
+    {
+      "idx": 9743057,
+      "snip": ",thumb:\"https://stc-chat.zdn.vn/images/banner/zalo-thumb-link.png\",title:\"Zalo cho m.y t.nh . Windows, Mac, Ubuntu\"}),a.updateMessageContentProp(U.a.TEXT,e||`M.i b.n s. d.ng Zalo m.y t.nh. Chi ti.t xem th.m t.i https://${l.default.CONFIG_DOMAIN}/may-tinh`),this._sendMessageObject(t,a,!1,!1)}_loadMoreMessageBottom(e,t,n){return Xt.default.loadBottomMessagesForConversation(e,t,n)}generateReceiveCallMessage(e){const t=t=>{let n={userId:e.userId,lastSmsLocalId:t?t.lastSmsLocalId:null,displayName:t?t.displayName:e.displayName};this._generateCallMessage(n,e)};le.a.getUser(e.userId).then((e=>{t(e)})).catch((e=>{t(null)}))}_generateCallMessage(e,t){0==t.caller&&t.duration>0&&ce.b.updateLastActionTime(t.userId,this._eventStore.dispatch,-1,ce.a.CALL);let n={statusMap:{},messages:[j.c.generateCallMsgTemplat"
+    }
+  ],
+  "isZaloCalling": [
+    {
+      "idx": 12894128,
+      "snip": "s(b.default.getUidMe(),m.d.autoAudioOutput);if(null!=r)try{r=JSON.parse(r)}catch(e){}else r=!0;return{autoAudioInput:i,autoAudioOutput:r,defaultAudInputDevice:t,defaultAudOutputDevice:n,defaultVidDevice:a}}getAdvancedSettings(e){const t=null!=e?e:b.default.getUidMe(),n=m.g.getCallAdvancedSettings(t,Object.keys(m.b),{useDefaultValue:!0});return Object(i.a)({},n)}isCalling(){return this.callRunning}isZaloCalling(){return this.callRunning}setCallRuning(e){e!==this.callRunning&&(this.callRunning=e,e||I.ModalManagerV2.closeModal({windowId:B.c,name:r.ModalIdentitiesDefine.GROUP_CALL}))}isSupport(){return A.default.enable_mac_call,A.default.enableCall&&se}isSupportVideoCall(){return this.isSupport()&&A.default.enableVideoCall}bindDispatch(e){this.dispatch=e}bindCallbackGenerateReceiveCallMessage(e){this.callb"
+    },
+    {
+      "idx": 37492789,
+      "snip": "s(b.default.getUidMe(),m.d.autoAudioOutput);if(null!=r)try{r=JSON.parse(r)}catch(e){}else r=!0;return{autoAudioInput:i,autoAudioOutput:r,defaultAudInputDevice:t,defaultAudOutputDevice:n,defaultVidDevice:a}}getAdvancedSettings(e){const t=null!=e?e:b.default.getUidMe(),n=m.g.getCallAdvancedSettings(t,Object.keys(m.b),{useDefaultValue:!0});return Object(i.a)({},n)}isCalling(){return this.callRunning}isZaloCalling(){return this.callRunning}setCallRuning(e){e!==this.callRunning&&(this.callRunning=e,e||I.ModalManagerV2.closeModal({windowId:B.c,name:r.ModalIdentitiesDefine.GROUP_CALL}))}isSupport(){return A.default.enable_mac_call,A.default.enableCall&&se}isSupportVideoCall(){return this.isSupport()&&A.default.enableVideoCall}bindDispatch(e){this.dispatch=e}bindCallbackGenerateReceiveCallMessage(e){this.callb"
+    },
+    {
+      "idx": 58325938,
+      "snip": "s(b.default.getUidMe(),m.d.autoAudioOutput);if(null!=r)try{r=JSON.parse(r)}catch(e){}else r=!0;return{autoAudioInput:i,autoAudioOutput:r,defaultAudInputDevice:t,defaultAudOutputDevice:n,defaultVidDevice:a}}getAdvancedSettings(e){const t=null!=e?e:b.default.getUidMe(),n=m.g.getCallAdvancedSettings(t,Object.keys(m.b),{useDefaultValue:!0});return Object(i.a)({},n)}isCalling(){return this.callRunning}isZaloCalling(){return this.callRunning}setCallRuning(e){e!==this.callRunning&&(this.callRunning=e,e||I.ModalManagerV2.closeModal({windowId:B.c,name:r.ModalIdentitiesDefine.GROUP_CALL}))}isSupport(){return A.default.enable_mac_call,A.default.enableCall&&se}isSupportVideoCall(){return this.isSupport()&&A.default.enableVideoCall}bindDispatch(e){this.dispatch=e}bindCallbackGenerateReceiveCallMessage(e){this.callb"
+    }
+  ],
+  "uploadcalllog": [
+    {
+      "idx": 12891777,
+      "snip": "getUidMe(),m.d.autoAudioInput,e.autoAudioInput),m.g.setDevicesSettings(b.default.getUidMe(),m.d.autoAudioOutput,e.autoAudioOutput),\"function\"==typeof this.pendingResolveDeviceList&&(this.pendingResolveDeviceList(this.deviceListData),this.pendingResolveDeviceList=null)}async uploadLog(t,n,a,i){try{if(0==i)return;const e=e=>{const r=new XMLHttpRequest;r.open(\"POST\",\"https://qos.talk.zing.vn/api/qos/uploadcalllog\",!0),r.onload=()=>{this.logInfo(\"sendCallLogQos: log uploaded\",r.responseText)},r.onerror=e=>{this.logError(\"sendCallLogQos: error uploading log:\",e)};let s=new FormData;s.append(\"call_id\",t+\"\"),s.append(\"owner_id\",n+\"\"),s.append(\"partner_id\",a+\"\"),s.append(\"time_stamp\",Date.now()+\"\"),s.append(\"duration\",i+\"\"),s.append(\"file\",new Blob([e])),r.send(s)};try{const t=await $zFeatures.zaloCall.request"
+    },
+    {
+      "idx": 12892551,
+      "snip": "nst t=await $zFeatures.zaloCall.requestCompressedLogFile();if(t&&t.status===$.ERROR)return void c.default.logCoreError(t.data.message,t.data.errorData);e(t.data)}catch(r){c.default.logCoreError(\"Unknown error\",r)}}catch(e){this.logError(\"err doSendLogQos\",e)}}async uploadLogGroup(t,n,a,i,r,s){try{if(0==r)return;const e=e=>{const o=new XMLHttpRequest;o.open(\"POST\",\"https://qos.talk.zing.vn/api/qos/uploadcalllog\",!0),o.onload=()=>{this.logInfo(\"sendCallLogQos: log uploaded\",o.responseText)},o.onerror=e=>{this.logError(\"sendCallLogQos: error uploading log:\",e)};let l=new FormData;l.append(\"call_id\",t+\"\"),l.append(\"owner_id\",n+\"\"),l.append(\"host_call\",a+\"\"),l.append(\"join_time\",i+\"\"),l.append(\"time_stamp\",Date.now()+\"\"),l.append(\"duration\",r+\"\"),l.append(\"log_type\",s+\"\"),l.append(\"file\",new Blob([e])),o.se"
+    },
+    {
+      "idx": 37490438,
+      "snip": "getUidMe(),m.d.autoAudioInput,e.autoAudioInput),m.g.setDevicesSettings(b.default.getUidMe(),m.d.autoAudioOutput,e.autoAudioOutput),\"function\"==typeof this.pendingResolveDeviceList&&(this.pendingResolveDeviceList(this.deviceListData),this.pendingResolveDeviceList=null)}async uploadLog(t,n,a,i){try{if(0==i)return;const e=e=>{const r=new XMLHttpRequest;r.open(\"POST\",\"https://qos.talk.zing.vn/api/qos/uploadcalllog\",!0),r.onload=()=>{this.logInfo(\"sendCallLogQos: log uploaded\",r.responseText)},r.onerror=e=>{this.logError(\"sendCallLogQos: error uploading log:\",e)};let s=new FormData;s.append(\"call_id\",t+\"\"),s.append(\"owner_id\",n+\"\"),s.append(\"partner_id\",a+\"\"),s.append(\"time_stamp\",Date.now()+\"\"),s.append(\"duration\",i+\"\"),s.append(\"file\",new Blob([e])),r.send(s)};try{const t=await $zFeatures.zaloCall.request"
+    }
+  ],
+  "api.conf.talk": [],
+  "ReceiveCall": [
+    {
+      "idx": 6750407,
+      "snip": "_UPDATE:3,CHECKED_SILENT_UPDATE:4,CHECKED_NOTIFY_UPDATE:5,START_DOWNLOAD:6,DOWNLOADING:7,DOWNLOAD_ERROR_RETRY:8,DOWNLOAD_ERROR:9,INSTALLING:10,FALLBACK:11},Go={CATALOG_ID_DEFAULT_NO_EXIST:-1},jo={NO_NETWORK:\"ERR_NO_NETWORK\",TIMEOUT_SENT:\"ERR_CONNECTION_TIMED_OUT_SENT\",TIMEOUT:\"ERR_CONNECTION_TIMED_OUT\"},Vo={MissCall:\"recommened.misscall\",CallTime:\"recommened.calltime\",Calling:\"recommened.calling\",ReceiveCall:\"recommened.receivecall\"},Ho={User:\"recommened.user\",OA:\"recommened.vip\",Gif:\"recommend.gif\",Link:\"recommened.link\"},zo=Object(a.a)(Object(a.a)(Object(a.a)({},Ho),Vo),{},{StickerSet:\"recommened.stickerset\"}),Ko=-10,Wo=Object.freeze({BASIC_ACCOUNT:0,PRO_1_ACCOUNT:1,PRO_2_ACCOUNT:2,PRO_3_ACCOUNT:3}),Yo={ADD_FRIEND:\"ADD_FRIEND\",REMOVE_FRIEND:\"REMOVE_FRIEND\",BLOCK_FRIEND:\"BLOCK_FRIEND\",UNBLOCK_FRIEND"
+    },
+    {
+      "idx": 7131814,
+      "snip": "sgId:\"\"}function c(e){if(null==e)return i.MSG_UNKNOWN;if(null===e.msgType||void 0===e.msgType)return i.MSG_UNKNOWN;switch(e.msgType){case i.MSG_CONTACT:switch(e.message.action){case i.MessageContentAction.Link:return i.MSG_LINK_CLIENT;case i.MessageContentAction.StickerSet:return i.MSG_STICKER_SET;case i.MessageContentAction.MissCall:case i.MessageContentAction.Calling:case i.MessageContentAction.ReceiveCall:case i.MessageContentAction.CallTime:return i.MSG_CALL}return i.MSG_CONTACT;case i.MSG_LINK_CLIENT:return i.MSG_LINK_CLIENT;case i.MSG_PHOTO:case i.MSG_PHOTO_2:case i.MSG_DOODLE:case i.MSG_PHOTO_GROUP:return Object(r.H)(e)?i.MSG_PHOTO_STICKER:Object(r.c)(e)?i.MSG_AI_STICKER:Object(r.C)(e)?i.MSG_NATIVE_STICKER:i.MSG_PHOTO;case i.MSG_TEXT:return i.MSG_TEXT;case i.MSG_VOICE:return i.MSG_VOICE;case i"
+    },
+    {
+      "idx": 9721271,
+      "snip": "eMessageFailure=this._handleMessageFailure.bind(this),Le.a.current=this._uploadDragFile,Me.a.current=this._getInputboxRef.bind(this),tt.a.bindShowLocalMessage(this._showLocalMessage),tt.a.bindSentMessage(this._sentMessage),this.makeCall=()=>{this.Logger.zsymb(21,\"Rggc1o\",[\"[zcall-v2] Call is not supported!\",\"GLqz3X\"])},j.a&&!vn&&(j.c.bindDispatch(this._eventStore.dispatch),j.c.bindCallbackGenerateReceiveCallMessage(this.generateReceiveCallMessage.bind(this)),this._videoCall=async(e=!0,t=null)=>{const n=await this._getFullInfoConversation();if(n.isGroup?W.default.logAction(2020201):W.default.logAction(e?10642:10641),!j.c.isSupport())return;if(j.c.isCalling())return void L.default.createInfo(z.a.str(j.b.IN_CALL));let a=t||n;if(a.userId&&this.ownUser.userId){let t,n,i={lastSmsLocalId:a.lastSmsLocalId,di"
+    }
+  ],
+  "EndCall": [
+    {
+      "idx": 12876566,
+      "snip": "STR_CALL_NO_VALID\",IN_CALL:\"STR_CALL_IN_ANOTHER_CALL\",CRASH:\"STR_CALL_CRASH\",END_CALL:\"STR_END_CALL\",INIT_CALL:\"STR_CALL_INIT\",LOAD_LIB_FAIL:\"STR_CALL_LOAD_LIB_FAIL\"},te=\"VIDEO_CALL\",ne=\"AUDIO_CALL\",ae=\"UNKNOWN\",ie=!0;let re=()=>(re=()=>!0,re());const se=re();const oe=new class{logStep(){}getPreSettings(e){return m.g.getAllDeviceSettings(e)}constructor(){this.clearTimer=()=>{this.clearTimerSendLogEndCall()},this.clearTimerSendLogEndCall=()=>{null!=this.sendLogEndCallTimerId&&(clearTimeout(this.sendLogEndCallTimerId),this.sendLogEndCallTimerId=null)},this.onNetworkChanged=e=>{e===T.a.CONNECTED&&this.requestQueue.dequeue()},this.enqueueRetry=(e,t,n={})=>{const{callId:a}=n,r=()=>{if(this.isRetryQueueFree=!1,!this.retryQueue.length)return this.isRetryQueueFree=!0;const e=this.retryQueue.shift();e?thi"
+    },
+    {
+      "idx": 12876599,
+      "snip": "ALL_IN_ANOTHER_CALL\",CRASH:\"STR_CALL_CRASH\",END_CALL:\"STR_END_CALL\",INIT_CALL:\"STR_CALL_INIT\",LOAD_LIB_FAIL:\"STR_CALL_LOAD_LIB_FAIL\"},te=\"VIDEO_CALL\",ne=\"AUDIO_CALL\",ae=\"UNKNOWN\",ie=!0;let re=()=>(re=()=>!0,re());const se=re();const oe=new class{logStep(){}getPreSettings(e){return m.g.getAllDeviceSettings(e)}constructor(){this.clearTimer=()=>{this.clearTimerSendLogEndCall()},this.clearTimerSendLogEndCall=()=>{null!=this.sendLogEndCallTimerId&&(clearTimeout(this.sendLogEndCallTimerId),this.sendLogEndCallTimerId=null)},this.onNetworkChanged=e=>{e===T.a.CONNECTED&&this.requestQueue.dequeue()},this.enqueueRetry=(e,t,n={})=>{const{callId:a}=n,r=()=>{if(this.isRetryQueueFree=!1,!this.retryQueue.length)return this.isRetryQueueFree=!0;const e=this.retryQueue.shift();e?this.handleRetrySendLogEndCall(e.par"
+    },
+    {
+      "idx": 12876630,
+      "snip": "_CALL_CRASH\",END_CALL:\"STR_END_CALL\",INIT_CALL:\"STR_CALL_INIT\",LOAD_LIB_FAIL:\"STR_CALL_LOAD_LIB_FAIL\"},te=\"VIDEO_CALL\",ne=\"AUDIO_CALL\",ae=\"UNKNOWN\",ie=!0;let re=()=>(re=()=>!0,re());const se=re();const oe=new class{logStep(){}getPreSettings(e){return m.g.getAllDeviceSettings(e)}constructor(){this.clearTimer=()=>{this.clearTimerSendLogEndCall()},this.clearTimerSendLogEndCall=()=>{null!=this.sendLogEndCallTimerId&&(clearTimeout(this.sendLogEndCallTimerId),this.sendLogEndCallTimerId=null)},this.onNetworkChanged=e=>{e===T.a.CONNECTED&&this.requestQueue.dequeue()},this.enqueueRetry=(e,t,n={})=>{const{callId:a}=n,r=()=>{if(this.isRetryQueueFree=!1,!this.retryQueue.length)return this.isRetryQueueFree=!0;const e=this.retryQueue.shift();e?this.handleRetrySendLogEndCall(e.params.error,0,Object(i.a)(Object("
+    }
+  ],
+  "AcceptCall": [],
+  "IncomingCall": [
+    {
+      "idx": 12886106,
+      "snip": "ueue.pause(),void n();const l=o[t];if(!l||isNaN(l,\"delay is NaN\"))return;this.clearTimerSendLogEndCall(),this.sendLogEndCallTimerId=setTimeout((()=>{n()}),l)}else\"function\"==typeof s&&(this.logError(\"SendLogEndCall retry error ~ should not retry\",e),s(e))}handleRecvSignal(e,t){this.logInfo(\"call-recv-signal\",e,JSON.stringify(t));const n={type:\"recvSignal\",command:e,data:t};this._sendToNative(n)}isIncomingCallEvent(e){return!!e&&(\"request\"===e.act||\"group_request\"===e.act)}isStopReceivingIncomingCall(){return!m.g.getSettingNotifyCall()}handleControl(e){if(!e)return;if(this.isIncomingCallEvent(e)&&this.isStopReceivingIncomingCall())return;if(this.logInfo(\"call-control\"),e&&e.data&&e.data.ts&&d.default.getTimeNow()-Number.parseInt(e.data.ts)>6e4)return void this.logError(\"call-control dropping\");if(this."
+    },
+    {
+      "idx": 12886198,
+      "snip": "LogEndCall(),this.sendLogEndCallTimerId=setTimeout((()=>{n()}),l)}else\"function\"==typeof s&&(this.logError(\"SendLogEndCall retry error ~ should not retry\",e),s(e))}handleRecvSignal(e,t){this.logInfo(\"call-recv-signal\",e,JSON.stringify(t));const n={type:\"recvSignal\",command:e,data:t};this._sendToNative(n)}isIncomingCallEvent(e){return!!e&&(\"request\"===e.act||\"group_request\"===e.act)}isStopReceivingIncomingCall(){return!m.g.getSettingNotifyCall()}handleControl(e){if(!e)return;if(this.isIncomingCallEvent(e)&&this.isStopReceivingIncomingCall())return;if(this.logInfo(\"call-control\"),e&&e.data&&e.data.ts&&d.default.getTimeNow()-Number.parseInt(e.data.ts)>6e4)return void this.logError(\"call-control dropping\");if(this.isIncomingCallEvent(e)){let t=null;this.isCalling()&&(t=\"zalo\"),e=Object(i.a)(Object(i.a)({}"
+    },
+    {
+      "idx": 12886287,
+      "snip": "s&&(this.logError(\"SendLogEndCall retry error ~ should not retry\",e),s(e))}handleRecvSignal(e,t){this.logInfo(\"call-recv-signal\",e,JSON.stringify(t));const n={type:\"recvSignal\",command:e,data:t};this._sendToNative(n)}isIncomingCallEvent(e){return!!e&&(\"request\"===e.act||\"group_request\"===e.act)}isStopReceivingIncomingCall(){return!m.g.getSettingNotifyCall()}handleControl(e){if(!e)return;if(this.isIncomingCallEvent(e)&&this.isStopReceivingIncomingCall())return;if(this.logInfo(\"call-control\"),e&&e.data&&e.data.ts&&d.default.getTimeNow()-Number.parseInt(e.data.ts)>6e4)return void this.logError(\"call-control dropping\");if(this.isIncomingCallEvent(e)){let t=null;this.isCalling()&&(t=\"zalo\"),e=Object(i.a)(Object(i.a)({},e),{},{inCallStatus:t})}const t={type:\"control\",data:e};if(this._sendToNative(t),e&&e.da"
+    }
+  ],
+  "callRunning": [
+    {
+      "idx": 12877701,
+      "snip": ";\"function\"==typeof t&&t(...e),r()}}),this.isRetryQueueFree&&r()},this.logError=c.default.logCoreError.bind(c.default.logCoreError,\"[zcall-v2] call-helper:\"),this.lastedActionCallValue=ae,this.sendLogEndCallTimerId=null,this.requestQueue=P(),this.retryQueue=[],this.isRetryQueueFree=!0,this.networkStatus=T.a.NOT_SET,this.countContinuouslyPressRejectCall=0,this.alreadyShowRejectCallSnackbar=!1,this.callRunning=!1,this.deviceListData=null,this.handleSendSignalError=this.handleSendSignalError.bind(this),this.handleRecvSignal=this.handleRecvSignal.bind(this),this.handleControl=this.handleControl.bind(this),this.isSupport=this.isSupport.bind(this),this.isSupportVideoCall=this.isSupportVideoCall.bind(this),this.lastedActionCall=this.lastedActionCall.bind(this),this.registerNetworkChanged(this.onNetworkChang"
+    },
+    {
+      "idx": 12894116,
+      "snip": "vicesSettings(b.default.getUidMe(),m.d.autoAudioOutput);if(null!=r)try{r=JSON.parse(r)}catch(e){}else r=!0;return{autoAudioInput:i,autoAudioOutput:r,defaultAudInputDevice:t,defaultAudOutputDevice:n,defaultVidDevice:a}}getAdvancedSettings(e){const t=null!=e?e:b.default.getUidMe(),n=m.g.getCallAdvancedSettings(t,Object.keys(m.b),{useDefaultValue:!0});return Object(i.a)({},n)}isCalling(){return this.callRunning}isZaloCalling(){return this.callRunning}setCallRuning(e){e!==this.callRunning&&(this.callRunning=e,e||I.ModalManagerV2.closeModal({windowId:B.c,name:r.ModalIdentitiesDefine.GROUP_CALL}))}isSupport(){return A.default.enable_mac_call,A.default.enableCall&&se}isSupportVideoCall(){return this.isSupport()&&A.default.enableVideoCall}bindDispatch(e){this.dispatch=e}bindCallbackGenerateReceiveCallMessage"
+    },
+    {
+      "idx": 12894156,
+      "snip": "utoAudioOutput);if(null!=r)try{r=JSON.parse(r)}catch(e){}else r=!0;return{autoAudioInput:i,autoAudioOutput:r,defaultAudInputDevice:t,defaultAudOutputDevice:n,defaultVidDevice:a}}getAdvancedSettings(e){const t=null!=e?e:b.default.getUidMe(),n=m.g.getCallAdvancedSettings(t,Object.keys(m.b),{useDefaultValue:!0});return Object(i.a)({},n)}isCalling(){return this.callRunning}isZaloCalling(){return this.callRunning}setCallRuning(e){e!==this.callRunning&&(this.callRunning=e,e||I.ModalManagerV2.closeModal({windowId:B.c,name:r.ModalIdentitiesDefine.GROUP_CALL}))}isSupport(){return A.default.enable_mac_call,A.default.enableCall&&se}isSupportVideoCall(){return this.isSupport()&&A.default.enableVideoCall}bindDispatch(e){this.dispatch=e}bindCallbackGenerateReceiveCallMessage(e){this.callbackGenerateReceiveCallMess"
+    }
+  ],
+  "zcall-v2": [
+    {
+      "idx": 9721146,
+      "snip": "._resetChatBoxInput.bind(this),this._handleForwardedMessageFailure=this._handleForwardedMessageFailure.bind(this),this._handleMessageFailure=this._handleMessageFailure.bind(this),Le.a.current=this._uploadDragFile,Me.a.current=this._getInputboxRef.bind(this),tt.a.bindShowLocalMessage(this._showLocalMessage),tt.a.bindSentMessage(this._sentMessage),this.makeCall=()=>{this.Logger.zsymb(21,\"Rggc1o\",[\"[zcall-v2] Call is not supported!\",\"GLqz3X\"])},j.a&&!vn&&(j.c.bindDispatch(this._eventStore.dispatch),j.c.bindCallbackGenerateReceiveCallMessage(this.generateReceiveCallMessage.bind(this)),this._videoCall=async(e=!0,t=null)=>{const n=await this._getFullInfoConversation();if(n.isGroup?W.default.logAction(2020201):W.default.logAction(e?10642:10641),!j.c.isSupport())return;if(j.c.isCalling())return void L.def"
+    },
+    {
+      "idx": 12877434,
+      "snip": "ct(i.a)({},e.params.options),{},{onSuccess:e.onSuccess,onError:e.onError})):r()};this.retryQueue.push({callId:a,params:{command:e,error:t,options:n},onSuccess:(...e)=>{const{onSuccess:t}=n||{};\"function\"==typeof t&&t(...e),r()},onError:(...e)=>{const{onError:t}=n||{};\"function\"==typeof t&&t(...e),r()}}),this.isRetryQueueFree&&r()},this.logError=c.default.logCoreError.bind(c.default.logCoreError,\"[zcall-v2] call-helper:\"),this.lastedActionCallValue=ae,this.sendLogEndCallTimerId=null,this.requestQueue=P(),this.retryQueue=[],this.isRetryQueueFree=!0,this.networkStatus=T.a.NOT_SET,this.countContinuouslyPressRejectCall=0,this.alreadyShowRejectCallSnackbar=!1,this.callRunning=!1,this.deviceListData=null,this.handleSendSignalError=this.handleSendSignalError.bind(this),this.handleRecvSignal=this.handleRec"
+    },
+    {
+      "idx": 34196236,
+      "snip": "._resetChatBoxInput.bind(this),this._handleForwardedMessageFailure=this._handleForwardedMessageFailure.bind(this),this._handleMessageFailure=this._handleMessageFailure.bind(this),Pe.a.current=this._uploadDragFile,De.a.current=this._getInputboxRef.bind(this),tt.a.bindShowLocalMessage(this._showLocalMessage),tt.a.bindSentMessage(this._sentMessage),this.makeCall=()=>{this.Logger.zsymb(21,\"Rggc1o\",[\"[zcall-v2] Call is not supported!\",\"GLqz3X\"])},j.a&&!vn&&(j.c.bindDispatch(this._eventStore.dispatch),j.c.bindCallbackGenerateReceiveCallMessage(this.generateReceiveCallMessage.bind(this)),this._videoCall=async(e=!0,t=null)=>{const n=await this._getFullInfoConversation();if(n.isGroup?W.default.logAction(2020201):W.default.logAction(e?10642:10641),!j.c.isSupport())return;if(j.c.isCalling())return void P.def"
+    }
+  ],
+  "group_call": [
+    {
+      "idx": 9722008,
+      "snip": "userId&&this.ownUser.userId){let t,n,i={lastSmsLocalId:a.lastSmsLocalId,displayName:a.displayName,userId:a.userId},r=!1;if(a.userId.startsWith(M.GROUPID_PREFIX)?r=!0:t=[a.userId],r)return void Pe.ModalManagerV2.openModal({windowId:this.windowId,name:M.ModalIdentitiesDefine.GROUP_CALL,params:{conversation:a,data:{isVideo:e,generateCallMessage:this._generateCallMessage.bind(this),maxUsers:l.default.group_call_max_users}}});j.c.makeCall(t,e,r,(e=>{this.generateReceiveCallMessage(e),e.caller&&e.duration>0&&ce.b.updateLastActionTime(i.userId,this._eventStore.dispatch,-1,ce.a.CALL)}),n)}},this.makeCall=this._videoCall.bind(this)),this._linkPreviewManager=o.ModuleContainer.resolve(it.b)}get Logger(){return this._Logger||(this._Logger=o.ModuleContainer.resolve(et.ZLoggerFactory).createZLogger(\"ui\",[\"chat-bo"
+    },
+    {
+      "idx": 9771496,
+      "snip": "sonalStickerPopoverOpen(e){this._effectTip&&this._effectTip.closeTip&&this._effectTip.closeTip.constructor==Function&&this._effectTip.closeTip(),this._closeAllPopupBeforeOpenAnother(e)}canMakeCallAgain(){let e=this._getChatInfo(),t=m.default.getUserId(e)||\"\",n=j.c.isSupport()&&!m.default.isOAType(e)&&t!=l.default.sendToMeId;return n&&!this.isGroup&&(n=!!e.isFr),n&&this.isGroup&&(!l.default.enable_group_call_for_user||!l.default.enable_group_call_entry_for_group||e.totalMember>l.default.enable_group_call_entry_for_group)&&(n=!1),n}async _replyMessage(e,t=!0,n=-1,a,i){var r;if(!e)return void this.Logger.zsymb(21,\"rIpWAZ\",['ReplyMessage: Invalid argument \"message\". Received : {}, convId={}, windowId={}',\"Gpn6Hc\"],e,this.convId,this.windowId);!0===t&&W.default.logAction(1063901),e.urgency===M.URGENCY_MO"
+    },
+    {
+      "idx": 9771535,
+      "snip": "Tip&&this._effectTip.closeTip&&this._effectTip.closeTip.constructor==Function&&this._effectTip.closeTip(),this._closeAllPopupBeforeOpenAnother(e)}canMakeCallAgain(){let e=this._getChatInfo(),t=m.default.getUserId(e)||\"\",n=j.c.isSupport()&&!m.default.isOAType(e)&&t!=l.default.sendToMeId;return n&&!this.isGroup&&(n=!!e.isFr),n&&this.isGroup&&(!l.default.enable_group_call_for_user||!l.default.enable_group_call_entry_for_group||e.totalMember>l.default.enable_group_call_entry_for_group)&&(n=!1),n}async _replyMessage(e,t=!0,n=-1,a,i){var r;if(!e)return void this.Logger.zsymb(21,\"rIpWAZ\",['ReplyMessage: Invalid argument \"message\". Received : {}, convId={}, windowId={}',\"Gpn6Hc\"],e,this.convId,this.windowId);!0===t&&W.default.logAction(1063901),e.urgency===M.URGENCY_MODE.IMPORTANT?W.default.logAction(210022"
+    }
+  ],
+  "rtpaddr": [],
+  "rtcpaddr": [],
+  "changeZRTP": [],
+  "audioConfig": []
+}

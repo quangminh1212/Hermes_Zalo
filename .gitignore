@@ -24,3 +24,7 @@ Thumbs.db
 .vscode/
 *.swp
 .hermes-link/
+
+# Phase B call captures
+research/zcall-pc/captures/
+
