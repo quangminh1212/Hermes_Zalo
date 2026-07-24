@@ -42,6 +42,9 @@ OpenClaw-style **zalouser** pattern: small **Node bridge** + **Hermes platform p
 | Anti-hang platform hints | ✅ |
 | Native buttons / poll clarify | ❌ personal API limits |
 | Edit message | ❌ personal API limits |
+| Voice note in → Hermes STT → agent | ✅ (gateway `stt` + `MessageType.VOICE`) |
+| Hermes → voice note reply (TTS) | ✅ after `/voice on` or `voice_only` |
+| **Native Zalo VoIP call** (gọi điện app) | ❌ not in zca-js — see `docs/VOICE_TASKING.md` |
 
 ---
 
