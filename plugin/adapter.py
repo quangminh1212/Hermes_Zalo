@@ -352,6 +352,12 @@ class ZaloAdapter(BasePlatformAdapter):
             if not isinstance(content, str):
                 content = str(content or "")
             content = _plain_zalo_text(content)
+            # Suppress non-Vietnamese / system status messages for non-admin chats
+            # Guest Zalo users should only see proper Vietnamese replies.
+            if not _is_admin_chat(target) and (
+                _is_system_status_message(content) or not _has_vietnamese(content)
+            ):
+                return SendResult(success=True, message_id=None)
             # CSKH: long replies → several short Zalo bubbles
             no_split = bool(meta.get("no_split") or meta.get("zalo_no_split"))
             parts = [content] if no_split else _split_zalo_cskh(content)
@@ -957,6 +963,61 @@ _CALL_END_PHRASES = (
 _CALL_TTL_SEC = 30 * 60
 # chat_id -> unix start time
 _call_sessions: Dict[str, float] = {}
+
+# ── System status message suppression for non-admin chats ─────────────
+# Bot internal status (queued, fallback, error) should ONLY be visible
+# to the owner/admin, not to guest/stranger DMs.
+_ZALO_STATUS_PATTERNS = (
+    "Queued for the next turn",
+    "Interrupting current task",
+    "Subagent working",
+    "Compressing context",
+    "Switched to fallback",
+    "Primary model failed",
+    "Unable to connect stably",
+    "Vui lòng thử lại sau",
+    "⚠️ The model produced",
+    "empty",
+)
+
+
+def _is_system_status_message(content: str) -> bool:
+    """Detect internal bot status messages that should not be sent to guests."""
+    if not content:
+        return False
+    c = content.strip()
+    for pat in _ZALO_STATUS_PATTERNS:
+        if pat in c:
+            return True
+    return False
+
+
+def _is_admin_chat(chat_id: str) -> bool:
+    """Check if the target chat is the owner/admin."""
+    admin = os.getenv("ZALO_HOME_CHANNEL") or ""
+    if not admin:
+        # fallback: hardcoded owner UID
+        admin = "2745295791726174088"
+    return str(chat_id).strip() == str(admin).strip()
+
+
+_VIET_DIACRITICS_RE = re.compile(
+    r"[àáảãạăắằẳẵặâấầẩẫậèéẻẽẹêếềểễệìíỉĩịòóỏõọôốồổỗộơớờởỡợ"
+    r"ùúủũụưứừửữựỳýỷỹỵđ"
+    r"ÀÁẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬÈÉẺẼẸÊẾỀỂỄỆÌÍỈĨỊÒÓỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢ"
+    r"ÙÚỦŨỤƯỨỪỬỮỰỲÝỶỸỴĐ]"
+)
+
+
+def _has_vietnamese(content: str) -> bool:
+    """Return True if content contains Vietnamese diacritical characters.
+
+    Bot always replies in proper Vietnamese with diacritics, so this is a
+    lightweight gate: pure-English system/status messages won't have them.
+    """
+    if not content:
+        return False
+    return bool(_VIET_DIACRITICS_RE.search(content))
 
 _CALL_MODE_PREFIX = (
     "[ZALO_PSEUDO_CALL]\n"
