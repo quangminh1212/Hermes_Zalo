@@ -1,0 +1,19 @@
+packages: []
+
+engineStrict: true
+strictPeerDependencies: false
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  '@swc/core': true
+  unrs-resolver: true
+  '@tailwindcss/oxide': true
+  better-sqlite3: true
+  electron: true
+  electron-winstaller: true
+  bufferutil: true
+  utf-8-validate: true
+  '@vercel/speed-insights': true
+  core-js: true
+  '@scarf/scarf': true
